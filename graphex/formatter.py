@@ -98,8 +98,8 @@ def _box_header(query: str, stats: dict[str, Any]) -> str:
     title = f"Graphex subgraph for: {query}" if query else "Graphex subgraph"
     subtitle = (
         f"Selected {stats.get('nodes_selected', 0)}/{stats.get('nodes_total', 0)} "
-        f"nodes · {stats.get('tokens_used', 0)}/{budget} tokens "
-        f"({stats.get('coverage_pct', 0)}%)"
+        f"nodes ({stats.get('coverage_pct', 0)}%) · "
+        f"{stats.get('tokens_used', 0)}/{budget} tokens"
     )
     width = max(len(title), len(subtitle)) + 2
     top = "┌" + "─" * width + "┐"
@@ -114,9 +114,10 @@ def _format_markdown(
     stats: dict[str, Any],
     scores: dict[str, float] | None,
     query: str,
+    include_header: bool = True,
 ) -> str:
     """Render the Markdown representation (see module docstring)."""
-    lines: list[str] = [_box_header(query, stats), ""]
+    lines: list[str] = [_box_header(query, stats), ""] if include_header else []
 
     lines.append("## Relevant Nodes")
     lines.append("")
@@ -257,6 +258,7 @@ def format_subgraph(
     format: str = "markdown",
     scores: dict[str, float] | None = None,
     query: str = "",
+    include_header: bool = True,
 ) -> str:
     """Render a selected subgraph as ``markdown``, ``json``, or ``yaml``.
 
@@ -277,7 +279,7 @@ def format_subgraph(
         ValueError: If ``format`` is not one of the supported values.
     """
     if format == "markdown":
-        return _format_markdown(graph, stats, scores, query)
+        return _format_markdown(graph, stats, scores, query, include_header=include_header)
     if format == "json":
         return _format_json(graph, stats, scores)
     if format == "yaml":

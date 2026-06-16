@@ -55,7 +55,7 @@ def test_markdown_header_box_and_subtitle() -> None:
     out = format_subgraph(_build_graph(), _stats(), query="how are stats computed")
     assert "┌" in out and "┐" in out and "└" in out and "┘" in out
     assert "Graphex subgraph for: how are stats computed" in out
-    assert "Selected 2/5 nodes · 120/500 tokens (24%)" in out
+    assert "Selected 2/5 nodes (24%) · 120/500 tokens" in out
 
 
 def test_markdown_node_headings_and_scores() -> None:
