@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -86,13 +87,18 @@ _RICH_NODE_KEYS: frozenset[str] = frozenset(
 
 
 def _to_float(value: Any, default: float) -> float:
-    """Best-effort float coercion that never raises."""
+    """Best-effort float coercion that never raises and rejects NaN/inf.
+
+    A single ``NaN`` weight or importance would otherwise poison the ``max()``
+    in score normalization and contaminate every node's score.
+    """
     if value is None or value == "":
         return default
     try:
-        return float(value)
+        result = float(value)
     except (TypeError, ValueError):
         return default
+    return result if math.isfinite(result) else default
 
 
 def _to_int_or_none(value: Any) -> int | None:
