@@ -4,9 +4,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import networkx as nx
 import pytest
 
-from graphex.budget import _NODE_OVERHEAD_TOKENS, count_tokens, select_subgraph
+from graphex.budget import (
+    _NODE_OVERHEAD_TOKENS,
+    _node_body,
+    count_tokens,
+    select_subgraph,
+)
 from graphex.models import Edge, KnowledgeGraph, Node
 
 
@@ -135,3 +141,110 @@ def test_strategies_respect_budget(strategy):
     scores = {nid: 1.0 for nid in g.node_ids}
     _sub, stats = select_subgraph(g, scores, budget=200, strategy=strategy)
     assert stats["tokens_used"] <= 200
+
+
+def _base_costs(g: KnowledgeGraph) -> dict[str, int]:
+    """Mimic the cache layer: base cost per node (body WITHOUT code + overhead)."""
+    return {
+        nid: count_tokens(_node_body(g, nid, None)) + _NODE_OVERHEAD_TOKENS for nid in g.node_ids
+    }
+
+
+def test_precomputed_token_costs_match_inline():
+    g = _chain_graph(12)
+    scores = {nid: 1.0 - i * 0.02 for i, nid in enumerate(g.node_ids)}
+    costs = _base_costs(g)
+
+    for budget in (30, 60, 120, 300):
+        sub_inline, stats_inline = select_subgraph(g, scores, budget=budget)
+        sub_pre, stats_pre = select_subgraph(g, scores, budget=budget, token_costs=costs)
+        assert set(sub_inline.node_ids) == set(sub_pre.node_ids), f"budget={budget}"
+        assert stats_inline["tokens_used"] == stats_pre["tokens_used"]
+        assert stats_pre["tokens_used"] <= budget
+
+
+def _bridge_graph() -> KnowledgeGraph:
+    """Two high-score nodes (n0, n2) joined only through a cheap bridge (n1)."""
+    g = KnowledgeGraph()
+    for i in range(3):
+        g.add_node(
+            Node(
+                id=f"n{i}",
+                label=f"node{i}",
+                type="function",
+                file_type="code",
+                description=f"thing {i}",
+                community=i,
+            )
+        )
+    g.add_edge(Edge(source="n0", target="n1", relation="calls"))
+    g.add_edge(Edge(source="n1", target="n2", relation="calls"))
+    return g
+
+
+def test_connected_repair_adds_bridge_when_budget_allows():
+    g = _bridge_graph()
+    # n0 and n2 are the high-value picks; n1 scores below min_score so it is NOT a
+    # candidate — only the connectivity repair can pull it in as a bridge.
+    scores = {"n0": 1.0, "n1": 0.0, "n2": 1.0}
+
+    # Sanity: without repair, greedy selects only the two disconnected hubs.
+    sub_no, _ = select_subgraph(
+        g,
+        scores,
+        budget=10_000,
+        redundancy_weight=0.0,
+        connectivity_bonus=0.0,
+        connected=False,
+    )
+    assert set(sub_no.node_ids) == {"n0", "n2"}
+    assert not nx.is_weakly_connected(sub_no.digraph)
+
+    # Big budget: repair must add n1 to stitch the two components together.
+    sub, stats = select_subgraph(
+        g,
+        scores,
+        budget=10_000,
+        redundancy_weight=0.0,
+        connectivity_bonus=0.0,
+        connected=True,
+    )
+    assert {"n0", "n2"} <= set(sub.node_ids)
+    assert "n1" in sub.node_ids  # bridge added by Steiner repair
+    assert nx.is_weakly_connected(sub.digraph)
+    assert stats["tokens_used"] <= 10_000
+
+
+def test_connected_repair_never_overflows_when_bridge_does_not_fit():
+    g = _bridge_graph()
+    scores = {"n0": 1.0, "n1": 0.0, "n2": 1.0}
+    base = _base_costs(g)
+    # Budget covers exactly n0 + n2, leaving no room for the n1 bridge.
+    budget = base["n0"] + base["n2"]
+    sub, stats = select_subgraph(
+        g,
+        scores,
+        budget=budget,
+        redundancy_weight=0.0,
+        connectivity_bonus=0.0,
+        connected=True,
+    )
+    assert stats["tokens_used"] <= budget  # never overflows
+    assert "n1" not in sub.node_ids  # bridge didn't fit → stays disconnected
+    comps = nx.number_connected_components(sub.digraph.to_undirected())
+    assert comps == 2
+
+
+def test_budget_invariant_across_connected_and_precomputed():
+    g = _chain_graph(14)
+    scores = {nid: 1.0 - i * 0.02 for i, nid in enumerate(g.node_ids)}
+    costs = _base_costs(g)
+    for budget in (20, 50, 120, 400):
+        for connected in (False, True):
+            for tc in (None, costs):
+                _sub, stats = select_subgraph(
+                    g, scores, budget=budget, connected=connected, token_costs=tc
+                )
+                assert (
+                    stats["tokens_used"] <= budget
+                ), f"overflow budget={budget} connected={connected} tc={tc is not None}"

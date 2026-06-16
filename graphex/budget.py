@@ -21,6 +21,7 @@ from __future__ import annotations
 import functools
 from pathlib import Path
 
+import networkx as nx
 import tiktoken
 
 from graphex.injector import extract_code_block, safe_source_path
@@ -73,6 +74,30 @@ def _node_body(graph: KnowledgeGraph, node_id: str, code_block: str | None) -> s
     if code_block:
         text = f"{text}\n{code_block}"
     return text
+
+
+def _node_cost(
+    graph: KnowledgeGraph,
+    node_id: str,
+    code_block: str | None,
+    model: str,
+    token_costs: dict[str, int] | None,
+) -> int:
+    """Token cost for a candidate: base body cost plus any injected code.
+
+    The *base* cost is the node body WITHOUT code (``_node_body(graph, nid, None)``)
+    plus :data:`_NODE_OVERHEAD_TOKENS`. It is taken from ``token_costs`` when the
+    caller precomputed it, else recomputed inline — the two paths agree by
+    construction. Injected code is always counted separately and added on top, so
+    the total is identical whether or not the base was precomputed.
+    """
+    if token_costs is not None and node_id in token_costs:
+        base = token_costs[node_id]
+    else:
+        base = count_tokens(_node_body(graph, node_id, None), model) + _NODE_OVERHEAD_TOKENS
+    if code_block:
+        base += count_tokens(code_block, model)
+    return base
 
 
 def _extract_codes(
@@ -141,6 +166,8 @@ def select_subgraph(
     inject_code: bool = False,
     project_root: Path | None = None,
     strategy: str = "greedy",
+    token_costs: dict[str, int] | None = None,
+    connected: bool = False,
 ) -> tuple[KnowledgeGraph, dict]:
     """Choose a subgraph maximising relevant, diverse, connected coverage under ``budget``.
 
@@ -156,6 +183,14 @@ def select_subgraph(
         project_root: Root for resolving ``source_file`` when ``inject_code``.
         strategy: ``"greedy"`` (cost-aware MMR, default) or ``"exact"`` (DP knapsack
             on relevance only — no diversity, for benchmarking the value ceiling).
+        token_costs: Optional ``{node_id: base_cost}`` precomputed by a caching layer.
+            Each value is the *base* cost — ``_node_body`` WITHOUT code plus
+            ``_NODE_OVERHEAD_TOKENS`` — used in place of recomputing it. When
+            ``inject_code`` is on, the injected code's own token cost is still added
+            on top of the supplied base. The result is identical to computing inline.
+        connected: When ``True``, repair the greedy result into a single connected
+            subgraph by adding bridge nodes (approximate Steiner) — never exceeding
+            ``budget`` (best-effort: adds only bridges that fit).
 
     Returns:
         ``(subgraph, stats)``. ``stats`` has ``nodes_selected, nodes_total,
@@ -175,8 +210,7 @@ def select_subgraph(
         codes = _extract_codes(graph, candidates, root)
 
     cost: dict[str, int] = {
-        nid: count_tokens(_node_body(graph, nid, codes.get(nid)), model) + _NODE_OVERHEAD_TOKENS
-        for nid in candidates
+        nid: _node_cost(graph, nid, codes.get(nid), model, token_costs) for nid in candidates
     }
     # A node that cannot fit even alone is unselectable; drop it up front.
     candidates = [nid for nid in candidates if cost[nid] <= budget]
@@ -195,6 +229,13 @@ def select_subgraph(
             redundancy_weight=redundancy_weight,
             connectivity_bonus=connectivity_bonus,
         )
+
+    if connected and selected:
+        bridges, tokens_used = _connect_components(
+            graph, selected, tokens_used, budget, cost, model, token_costs
+        )
+        if bridges:
+            selected = selected + bridges
 
     sub = graph.induced_subgraph(selected)
     if inject_code:
@@ -286,6 +327,118 @@ def _greedy_mmr(
         return [best_single], cost[best_single]
 
     return selected, tokens_used
+
+
+def _connect_components(
+    graph: KnowledgeGraph,
+    selected: list[str],
+    tokens_used: int,
+    budget: int,
+    cost: dict[str, int],
+    model: str,
+    token_costs: dict[str, int] | None,
+) -> tuple[list[str], int]:
+    """Approximate-Steiner repair: stitch the selected set into one component.
+
+    Treats ``graph.digraph`` as undirected. While the selected nodes span more than
+    one connected component (in the full-graph undirected view), it finds the two
+    nearest components and the shortest bridging path between them, then adds the
+    intermediate "bridge" nodes — but only if their combined cost fits the budget
+    that is still free. Bridge nodes were not candidates, so their cost is computed
+    here (base from ``token_costs``/recompute; no code injected for bridges).
+
+    Best-effort and budget-safe: it never adds a bridge that would push
+    ``tokens_used`` past ``budget`` and stops when nothing more fits, leaving the
+    result possibly still disconnected rather than overflowing.
+
+    Returns ``(bridge_nodes_added, new_tokens_used)``.
+    """
+    undirected = graph.digraph.to_undirected(as_view=True)
+    in_subgraph = set(selected)
+    bridge_cost: dict[str, int] = {}
+
+    def node_cost(nid: str) -> int:
+        if nid not in bridge_cost:
+            bridge_cost[nid] = _node_cost(graph, nid, None, model, token_costs)
+        return bridge_cost[nid]
+
+    added: list[str] = []
+    while True:
+        # Components of the current selection, viewed in the full undirected graph.
+        comps = list(nx.connected_components(undirected.subgraph(in_subgraph)))
+        if len(comps) <= 1:
+            break
+
+        # Find the cheapest (fewest-bridge) path joining any two components, using a
+        # multi-source BFS from one component out to the nearest other component.
+        best_bridges: list[str] | None = None
+        comp_id = {nid: i for i, comp in enumerate(comps) for nid in comp}
+        for i, comp in enumerate(comps):
+            try:
+                # Shortest hop path from any node in comp to any node in another comp.
+                bridges = _nearest_bridge(undirected, comp, comp_id, i)
+            except nx.NetworkXNoPath:
+                bridges = None
+            if bridges is not None and (best_bridges is None or len(bridges) < len(best_bridges)):
+                best_bridges = bridges
+
+        if best_bridges is None:
+            break  # components are unreachable from each other; cannot connect
+
+        # Only the truly new bridge nodes cost anything.
+        new_bridges = [b for b in best_bridges if b not in in_subgraph]
+        extra = sum(node_cost(b) for b in new_bridges)
+        if tokens_used + extra > budget:
+            break  # this bridge doesn't fit; best-effort stops here
+
+        tokens_used += extra
+        for b in new_bridges:
+            in_subgraph.add(b)
+            added.append(b)
+
+    return added, tokens_used
+
+
+def _nearest_bridge(
+    undirected,
+    source_comp: set[str],
+    comp_id: dict[str, int],
+    source_id: int,
+) -> list[str] | None:
+    """Shortest path (incl. endpoints) from ``source_comp`` to the nearest other
+    selected component, as a node list — or ``None`` if no path reaches one.
+
+    Multi-source BFS over the full undirected graph: it expands outward from the
+    whole source component and stops at the first node belonging to a different
+    selected component, reconstructing the bridging path back to the source.
+    """
+    visited: dict[str, str | None] = {n: None for n in source_comp}
+    frontier: list[str] = list(source_comp)
+    target: str | None = None
+    while frontier and target is None:
+        nxt: list[str] = []
+        for u in frontier:
+            for v in undirected.neighbors(u):
+                if v in visited:
+                    continue
+                visited[v] = u
+                if comp_id.get(v, source_id) != source_id:
+                    target = v
+                    break
+                nxt.append(v)
+            if target is not None:
+                break
+        frontier = nxt
+    if target is None:
+        return None
+    # Reconstruct path target -> ... -> source root.
+    path: list[str] = []
+    cur: str | None = target
+    while cur is not None:
+        path.append(cur)
+        cur = visited[cur]
+    path.reverse()
+    return path
 
 
 def _knapsack_exact(
