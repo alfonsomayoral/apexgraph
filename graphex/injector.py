@@ -29,6 +29,24 @@ from graphex.models import KnowledgeGraph
 _BRACE_EXTS: frozenset[str] = frozenset({".ts", ".tsx", ".js", ".jsx", ".go"})
 
 
+def safe_source_path(project_root: Path, source_file: str) -> Path | None:
+    """Resolve ``source_file`` under ``project_root``, or ``None`` if it escapes.
+
+    Security boundary: a graph is untrusted input. A malicious ``source_file``
+    such as ``/etc/passwd`` or ``../../secret`` would otherwise let code injection
+    read arbitrary files off the host (``Path`` joins let an absolute right-hand
+    side win, and ``..`` walks upward). We resolve the candidate and require it to
+    stay inside ``project_root``; anything else is rejected and never opened.
+    """
+    root = project_root.resolve()
+    try:
+        candidate = (root / source_file).resolve()
+        candidate.relative_to(root)
+    except (ValueError, OSError):
+        return None
+    return candidate
+
+
 def _parse_line_number(source_location: str | int | None) -> int | None:
     """Parse a line spec into a 1-based line number, or ``None`` if invalid.
 
@@ -179,7 +197,9 @@ def inject_code(
         if not source_file or source_location is None:
             continue
 
-        file_path = project_root / source_file
+        file_path = safe_source_path(project_root, source_file)
+        if file_path is None:
+            continue  # path escapes project_root — refuse to read it
         block = extract_code_block(file_path, source_location)
         if block is not None:
             attrs["code_block"] = block

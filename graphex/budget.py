@@ -23,7 +23,7 @@ from pathlib import Path
 
 import tiktoken
 
-from graphex.injector import extract_code_block
+from graphex.injector import extract_code_block, safe_source_path
 from graphex.models import KnowledgeGraph
 from graphex.retrieval.base import normalize
 
@@ -88,7 +88,12 @@ def _extract_codes(
         loc = a.get("source_location")
         if not src or loc is None:
             continue
-        block = extract_code_block(project_root / src, loc)
+        # Contain reads to project_root: an untrusted graph must not be able to
+        # exfiltrate arbitrary host files via a crafted source_file path.
+        path = safe_source_path(project_root, src)
+        if path is None:
+            continue
+        block = extract_code_block(path, loc)
         if block:
             codes[nid] = block
     return codes
