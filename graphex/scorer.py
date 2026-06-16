@@ -60,12 +60,16 @@ def _compute(
 
     bm25_norm = bm25.normalized_scores(query)
     seeds = bm25.seeds(query, k=k_seeds)
-
-    # No lexical hit at all → fall back to query-independent centrality so the
-    # caller still gets something sensible rather than an empty result.
-    ppr = personalized_pagerank(graph, seeds) if seeds else dict(artifacts.global_pagerank)
-
     prior = fusion.importance_prior(graph)
+
+    # No lexical hit at all → return zeros rather than confidently surfacing
+    # centrality noise. For an LLM-context tool, "nothing matched" is the honest
+    # answer; the downstream min_score filter then yields an empty subgraph.
+    if not seeds:
+        zeros = dict.fromkeys(graph.node_ids, 0.0)
+        return ScoreBreakdown(final=zeros, bm25=bm25_norm, ppr=dict(zeros), prior=prior)
+
+    ppr = personalized_pagerank(graph, seeds)
     final = fusion.fuse(ppr, prior, gamma=gamma)
 
     return ScoreBreakdown(

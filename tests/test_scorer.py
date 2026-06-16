@@ -85,12 +85,13 @@ def test_empty_graph():
     assert score_nodes(KnowledgeGraph(), "anything") == {}
 
 
-def test_no_lexical_match_falls_back_to_centrality():
+def test_no_lexical_match_returns_zeros():
     g = _auth_graph()
-    # A query with zero token overlap should not return all zeros; it falls back
-    # to global centrality so the caller still gets the structurally central node.
+    # A query with zero lexical overlap returns all zeros — the honest "nothing
+    # matched" answer for an LLM-context tool, rather than confident centrality
+    # noise. The downstream min_score filter then yields an empty subgraph.
     scores = score_nodes(g, "квантовая запутанность")
-    assert any(v > 0 for v in scores.values())
+    assert all(v == 0.0 for v in scores.values())
 
 
 def test_detailed_components_present():
