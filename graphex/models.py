@@ -245,10 +245,7 @@ class KnowledgeGraph:
     def to_dict(self) -> dict[str, Any]:
         """Serialize to a graphify-compatible dict (nodes / links / hyperedges)."""
         nodes = [{"id": nid, **self.digraph.nodes[nid]} for nid in self.digraph.nodes]
-        links = [
-            {"source": u, "target": v, **data}
-            for u, v, data in self.digraph.edges(data=True)
-        ]
+        links = [{"source": u, "target": v, **data} for u, v, data in self.digraph.edges(data=True)]
         hyperedges = [
             {
                 "id": he.id,
