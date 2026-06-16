@@ -40,3 +40,4 @@ bench/compare_graphify.py
 bench/_clean_eval.py
 bench/results_graphify.json
 bench/_graphify_vs_graphex.py
+bench/_supabase_eval.py

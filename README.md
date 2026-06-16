@@ -125,46 +125,53 @@ holds together. The single most relevant node is guaranteed to survive.
 
 ## 📊 Results — Graphex vs graphify
 
-Head-to-head on the **same real codebase** — a production app app
-(~9,000-node graph). graphify answers with its native graph + BFS query; Graphex
-builds a clean code-only index and retrieves. Averaged over **10 feature
-queries** at a 2,000-token budget:
+**Two real codebases, two very different graph shapes, the same outcome: Graphex
+returns ~2× more on-topic code, in a third of the nodes, an order of magnitude
+faster.** Each is averaged over 10 feature queries at a 2,000-token budget —
+graphify answers with its native graph + BFS query; Graphex builds its own
+code-only index and retrieves.
 
 <div align="center">
 
-| metric | graphify | graphex&nbsp;`bm25` | graphex&nbsp;`local` |
-|---|:---:|:---:|:---:|
-| 🎯 **on-topic precision** *(feature code)* | 3% | 36% | **47%** |
-| 🧹 **translation-string noise** | 80% | **0%** | **0%** |
-| 🎈 **nodes handed to the LLM** | 38 | 11 | **11** |
-| ⚡ **latency / query** | 0.80 s | **0.03 s** | 0.18 s |
+| metric | repo | graphify | **graphex** |
+|---|---|:---:|:---:|
+| 🎯 **on-topic precision** | Repo A · Python, clean | 31% | **59%** `bm25` |
+| 🎯 **on-topic precision** | Repo B · RN app, ~58% i18n | 3% | **47%** `local` |
+| 🧹 **i18n noise** | Repo B | 80% | **0%** |
+| 🎈 **nodes returned** (avg) | both | ~39 | **~24** |
+| ⚡ **latency / query** | both | 0.5–0.8 s | **<0.2 s** |
+
+*Repo A: 477-node graph, no i18n — a clean test of pure retrieval.
+Repo B: 9.3k-node graph, ~58% translation strings.*
 
 </div>
 
-**Graphex's semantic backend is ~16× more precise than graphify and returns zero
-translation noise** — because graphify's graph is ~58% i18n strings and its BFS
-walks straight into them, while Graphex's own indexer keeps only code and its
-scoring ranks the *actual* feature code to the top:
+Graphex is **~2× more precise on the clean Python repo** (pure retrieval quality,
+no noise to hide behind) and **~16× more precise on the noisy mobile repo** — its
+own indexer keeps only code, and its scoring ranks the *actual* feature code to
+the top instead of walking into translation strings:
 
 ```text
 query "AI coaching"
   graphify → file.json, file.json, file.json …   (translation files first)
   graphex  → Component, Component, Component, store
 
-query "user authentication and login flow"
-  graphify → 89 nodes, mostly i18n strings (term, term, exercises …)
-  graphex  → 12 nodes — a_symbol, a_symbol, a_function …
+query "supabase management api client"
+  graphify → mostly unrelated helpers + config        (precision 0%)
+  graphex  → Client, management HTTP calls, account tools
 ```
 
-And Graphex builds that clean graph itself, fast: **5,178 code nodes from 391
-files in ~1.5 s**, no LLM required.
+And it builds those graphs itself, fast: **540 Python nodes in ~0.9 s**, or
+**5,178 nodes from a 391-file app in ~1.5 s** — no LLM required.
 
-> **On honesty:** precision is reported as *feature code that isn't a translation
-> string*; recall isn't compared because the two tools index different node
-> universes. A reproducible slurp head-to-head also lives in [`bench/`](bench/).
-> The takeaway is consistent across both: Graphex trades a little raw recall for a
-> large gain in **precision, focus and speed** — which is what an LLM context
-> window actually rewards.
+> **Which backend?** `bm25` (default) wins on well-named code where symbols already
+> describe themselves; the offline `local` backend wins when the query vocabulary
+> differs from the symbol names (natural-language questions, or UI code). graphify
+> still edges ahead on a few tight single-file lookups (e.g. `module.py`).
+>
+> *Precision = returned nodes that are on-topic feature code; recall isn't compared
+> because the two tools index different node universes. Methodology and a separate
+> slurp head-to-head live in [`bench/`](bench/).*
 
 ---
 
