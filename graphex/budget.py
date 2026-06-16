@@ -31,10 +31,23 @@ from graphex.retrieval.base import normalize
 # relationship line — keeps cost a slight over-estimate so output never overflows.
 _NODE_OVERHEAD_TOKENS = 12
 
+# Default relevance floor. Positive so that queries with no real match select
+# nothing (an honest "no relevant nodes") instead of padding the budget with
+# centrality noise. Shared by the CLI, MCP server, and benchmark.
+DEFAULT_MIN_SCORE = 0.05
+
 
 @functools.lru_cache(maxsize=8)
 def _encoding(model: str) -> tiktoken.Encoding:
-    return tiktoken.get_encoding(model)
+    """Resolve a tiktoken encoding from either an encoding name or a model id."""
+    try:
+        return tiktoken.get_encoding(model)
+    except (ValueError, KeyError):
+        pass
+    try:
+        return tiktoken.encoding_for_model(model)
+    except (ValueError, KeyError):
+        return tiktoken.get_encoding("cl100k_base")
 
 
 def count_tokens(text: str, model: str = "cl100k_base") -> int:
@@ -117,7 +130,7 @@ def select_subgraph(
     budget: int,
     *,
     model: str = "cl100k_base",
-    min_score: float = 0.0,
+    min_score: float = DEFAULT_MIN_SCORE,
     redundancy_weight: float = 0.3,
     connectivity_bonus: float = 0.2,
     inject_code: bool = False,
@@ -249,10 +262,6 @@ def _greedy_mmr(
         if best_nid is None:
             break  # nothing left fits the remaining budget
 
-        # Stop padding with nodes that only add redundancy (non-positive value).
-        if best_priority <= 0.0 and selected:
-            break
-
         selected.append(best_nid)
         tokens_used += cost[best_nid]
         remaining.discard(best_nid)
@@ -263,6 +272,13 @@ def _greedy_mmr(
             if sim > max_redundancy[nid]:
                 max_redundancy[nid] = sim
         connected.update(neighbors[best_nid] & remaining)
+
+    # Density-greedy can leave the single most relevant node out when a cheap,
+    # low-value node was taken first (classic knapsack failure). Guarantee the
+    # standard `max(greedy, best single item)` bound so the top hit is never lost.
+    best_single = max(candidates, key=lambda n: rel.get(n, 0.0))
+    if rel.get(best_single, 0.0) > sum(rel.get(n, 0.0) for n in selected):
+        return [best_single], cost[best_single]
 
     return selected, tokens_used
 
