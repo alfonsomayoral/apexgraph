@@ -32,3 +32,10 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# slurp audit log (created when running the comparison bench from here)
+.slurp/
+# local, machine-specific comparison artifacts (absolute paths)
+bench/compare_graphify.py
+bench/_clean_eval.py
+bench/results_graphify.json
