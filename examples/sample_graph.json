@@ -1,0 +1,1395 @@
+{
+  "nodes": [
+    {
+      "id": "sample_project___init__",
+      "label": "__init__.py",
+      "type": "module",
+      "description": "Python module __init__.py",
+      "source_file": "__init__.py",
+      "source_location": "L1",
+      "file_type": "code"
+    },
+    {
+      "id": "api___init__",
+      "label": "__init__.py",
+      "type": "module",
+      "description": "Python module api/__init__.py",
+      "source_file": "api/__init__.py",
+      "source_location": "L1",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes",
+      "label": "routes.py",
+      "type": "module",
+      "description": "Python module api/routes.py",
+      "source_file": "api/routes.py",
+      "source_location": "L1",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes___future___annotations",
+      "label": "__future__.annotations",
+      "type": "import",
+      "description": "Import of __future__.annotations",
+      "source_file": "api/routes.py",
+      "source_location": "L10",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_typing_any",
+      "label": "typing.Any",
+      "type": "import",
+      "description": "Import of typing.Any",
+      "source_file": "api/routes.py",
+      "source_location": "L12",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_auth_service_authservice",
+      "label": "auth.service.AuthService",
+      "type": "import",
+      "description": "Import of auth.service.AuthService",
+      "source_file": "api/routes.py",
+      "source_location": "L14",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_db_models_task",
+      "label": "db.models.Task",
+      "type": "import",
+      "description": "Import of db.models.Task",
+      "source_file": "api/routes.py",
+      "source_location": "L15",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_db_models_user",
+      "label": "db.models.User",
+      "type": "import",
+      "description": "Import of db.models.User",
+      "source_file": "api/routes.py",
+      "source_location": "L15",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_db_pool_connectionpool",
+      "label": "db.pool.ConnectionPool",
+      "type": "import",
+      "description": "Import of db.pool.ConnectionPool",
+      "source_file": "api/routes.py",
+      "source_location": "L16",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_db_pool_find_user_by_email",
+      "label": "db.pool.find_user_by_email",
+      "type": "import",
+      "description": "Import of db.pool.find_user_by_email",
+      "source_file": "api/routes.py",
+      "source_location": "L16",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_db_pool_insert_task",
+      "label": "db.pool.insert_task",
+      "type": "import",
+      "description": "Import of db.pool.insert_task",
+      "source_file": "api/routes.py",
+      "source_location": "L16",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_db_pool_list_tasks_for_user",
+      "label": "db.pool.list_tasks_for_user",
+      "type": "import",
+      "description": "Import of db.pool.list_tasks_for_user",
+      "source_file": "api/routes.py",
+      "source_location": "L16",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_auth_session_session",
+      "label": "auth.session.Session",
+      "type": "import",
+      "description": "Import of auth.session.Session",
+      "source_file": "api/routes.py",
+      "source_location": "L22",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_router",
+      "label": "Router",
+      "type": "class",
+      "description": "Class Router",
+      "source_file": "api/routes.py",
+      "source_location": "L27",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes___init__",
+      "label": "__init__",
+      "type": "function",
+      "description": "Function __init__",
+      "source_file": "api/routes.py",
+      "source_location": "L30",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_login_route",
+      "label": "login_route",
+      "type": "function",
+      "description": "Function login_route",
+      "source_file": "api/routes.py",
+      "source_location": "L36",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_logout_route",
+      "label": "logout_route",
+      "type": "function",
+      "description": "Function logout_route",
+      "source_file": "api/routes.py",
+      "source_location": "L44",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_list_tasks_route",
+      "label": "list_tasks_route",
+      "type": "function",
+      "description": "Function list_tasks_route",
+      "source_file": "api/routes.py",
+      "source_location": "L52",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_create_task_route",
+      "label": "create_task_route",
+      "type": "function",
+      "description": "Function create_task_route",
+      "source_file": "api/routes.py",
+      "source_location": "L60",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_require_auth",
+      "label": "require_auth",
+      "type": "function",
+      "description": "Function require_auth",
+      "source_file": "api/routes.py",
+      "source_location": "L71",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes_whoami_route",
+      "label": "whoami_route",
+      "type": "function",
+      "description": "Function whoami_route",
+      "source_file": "api/routes.py",
+      "source_location": "L78",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes__bearer_token",
+      "label": "_bearer_token",
+      "type": "function",
+      "description": "Function _bearer_token",
+      "source_file": "api/routes.py",
+      "source_location": "L89",
+      "file_type": "code"
+    },
+    {
+      "id": "api_routes__load_user",
+      "label": "_load_user",
+      "type": "function",
+      "description": "Function _load_user",
+      "source_file": "api/routes.py",
+      "source_location": "L97",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server",
+      "label": "server.py",
+      "type": "module",
+      "description": "Python module api/server.py",
+      "source_file": "api/server.py",
+      "source_location": "L1",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server___future___annotations",
+      "label": "__future__.annotations",
+      "type": "import",
+      "description": "Import of __future__.annotations",
+      "source_file": "api/server.py",
+      "source_location": "L9",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server_dataclasses_dataclass",
+      "label": "dataclasses.dataclass",
+      "type": "import",
+      "description": "Import of dataclasses.dataclass",
+      "source_file": "api/server.py",
+      "source_location": "L11",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server_typing_callable",
+      "label": "typing.Callable",
+      "type": "import",
+      "description": "Import of typing.Callable",
+      "source_file": "api/server.py",
+      "source_location": "L12",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server_auth_service_authservice",
+      "label": "auth.service.AuthService",
+      "type": "import",
+      "description": "Import of auth.service.AuthService",
+      "source_file": "api/server.py",
+      "source_location": "L14",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server_auth_session_sessionstore",
+      "label": "auth.session.SessionStore",
+      "type": "import",
+      "description": "Import of auth.session.SessionStore",
+      "source_file": "api/server.py",
+      "source_location": "L15",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server_api_routes_response",
+      "label": "api.routes.Response",
+      "type": "import",
+      "description": "Import of api.routes.Response",
+      "source_file": "api/server.py",
+      "source_location": "L16",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server_api_routes_router",
+      "label": "api.routes.Router",
+      "type": "import",
+      "description": "Import of api.routes.Router",
+      "source_file": "api/server.py",
+      "source_location": "L16",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server_db_pool_connectionpool",
+      "label": "db.pool.ConnectionPool",
+      "type": "import",
+      "description": "Import of db.pool.ConnectionPool",
+      "source_file": "api/server.py",
+      "source_location": "L17",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server_app",
+      "label": "App",
+      "type": "class",
+      "description": "Class App",
+      "source_file": "api/server.py",
+      "source_location": "L23",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server_dispatch",
+      "label": "dispatch",
+      "type": "function",
+      "description": "Function dispatch",
+      "source_file": "api/server.py",
+      "source_location": "L29",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server_build_app",
+      "label": "build_app",
+      "type": "function",
+      "description": "Function build_app",
+      "source_file": "api/server.py",
+      "source_location": "L37",
+      "file_type": "code"
+    },
+    {
+      "id": "api_server_main",
+      "label": "main",
+      "type": "function",
+      "description": "Function main",
+      "source_file": "api/server.py",
+      "source_location": "L54",
+      "file_type": "code"
+    },
+    {
+      "id": "auth___init__",
+      "label": "__init__.py",
+      "type": "module",
+      "description": "Python module auth/__init__.py",
+      "source_file": "auth/__init__.py",
+      "source_location": "L1",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service",
+      "label": "service.py",
+      "type": "module",
+      "description": "Python module auth/service.py",
+      "source_file": "auth/service.py",
+      "source_location": "L1",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service___future___annotations",
+      "label": "__future__.annotations",
+      "type": "import",
+      "description": "Import of __future__.annotations",
+      "source_file": "auth/service.py",
+      "source_location": "L9",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_hashlib",
+      "label": "hashlib",
+      "type": "import",
+      "description": "Import of hashlib",
+      "source_file": "auth/service.py",
+      "source_location": "L11",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_hmac",
+      "label": "hmac",
+      "type": "import",
+      "description": "Import of hmac",
+      "source_file": "auth/service.py",
+      "source_location": "L12",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_dataclasses_dataclass",
+      "label": "dataclasses.dataclass",
+      "type": "import",
+      "description": "Import of dataclasses.dataclass",
+      "source_file": "auth/service.py",
+      "source_location": "L13",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_auth_session_session",
+      "label": "auth.session.Session",
+      "type": "import",
+      "description": "Import of auth.session.Session",
+      "source_file": "auth/service.py",
+      "source_location": "L15",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_auth_session_sessionstore",
+      "label": "auth.session.SessionStore",
+      "type": "import",
+      "description": "Import of auth.session.SessionStore",
+      "source_file": "auth/service.py",
+      "source_location": "L15",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_db_models_user",
+      "label": "db.models.User",
+      "type": "import",
+      "description": "Import of db.models.User",
+      "source_file": "auth/service.py",
+      "source_location": "L16",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_db_pool_connectionpool",
+      "label": "db.pool.ConnectionPool",
+      "type": "import",
+      "description": "Import of db.pool.ConnectionPool",
+      "source_file": "auth/service.py",
+      "source_location": "L17",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_db_pool_find_user_by_email",
+      "label": "db.pool.find_user_by_email",
+      "type": "import",
+      "description": "Import of db.pool.find_user_by_email",
+      "source_file": "auth/service.py",
+      "source_location": "L17",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_hash_password",
+      "label": "hash_password",
+      "type": "function",
+      "description": "Function hash_password",
+      "source_file": "auth/service.py",
+      "source_location": "L20",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_verify_password",
+      "label": "verify_password",
+      "type": "function",
+      "description": "Function verify_password",
+      "source_file": "auth/service.py",
+      "source_location": "L28",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_loginresult",
+      "label": "LoginResult",
+      "type": "class",
+      "description": "Class LoginResult",
+      "source_file": "auth/service.py",
+      "source_location": "L35",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_authservice",
+      "label": "AuthService",
+      "type": "class",
+      "description": "Class AuthService",
+      "source_file": "auth/service.py",
+      "source_location": "L43",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service___init__",
+      "label": "__init__",
+      "type": "function",
+      "description": "Function __init__",
+      "source_file": "auth/service.py",
+      "source_location": "L46",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_login",
+      "label": "login",
+      "type": "function",
+      "description": "Function login",
+      "source_file": "auth/service.py",
+      "source_location": "L50",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service__check_user",
+      "label": "_check_user",
+      "type": "function",
+      "description": "Function _check_user",
+      "source_file": "auth/service.py",
+      "source_location": "L65",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_logout",
+      "label": "logout",
+      "type": "function",
+      "description": "Function logout",
+      "source_file": "auth/service.py",
+      "source_location": "L71",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_service_validate_token",
+      "label": "validate_token",
+      "type": "function",
+      "description": "Function validate_token",
+      "source_file": "auth/service.py",
+      "source_location": "L75",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session",
+      "label": "session.py",
+      "type": "module",
+      "description": "Python module auth/session.py",
+      "source_file": "auth/session.py",
+      "source_location": "L1",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session___future___annotations",
+      "label": "__future__.annotations",
+      "type": "import",
+      "description": "Import of __future__.annotations",
+      "source_file": "auth/session.py",
+      "source_location": "L9",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_secrets",
+      "label": "secrets",
+      "type": "import",
+      "description": "Import of secrets",
+      "source_file": "auth/session.py",
+      "source_location": "L11",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_dataclasses_dataclass",
+      "label": "dataclasses.dataclass",
+      "type": "import",
+      "description": "Import of dataclasses.dataclass",
+      "source_file": "auth/session.py",
+      "source_location": "L12",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_datetime_datetime",
+      "label": "datetime.datetime",
+      "type": "import",
+      "description": "Import of datetime.datetime",
+      "source_file": "auth/session.py",
+      "source_location": "L13",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_datetime_timedelta",
+      "label": "datetime.timedelta",
+      "type": "import",
+      "description": "Import of datetime.timedelta",
+      "source_file": "auth/session.py",
+      "source_location": "L13",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_datetime_timezone",
+      "label": "datetime.timezone",
+      "type": "import",
+      "description": "Import of datetime.timezone",
+      "source_file": "auth/session.py",
+      "source_location": "L13",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_session",
+      "label": "Session",
+      "type": "class",
+      "description": "Class Session",
+      "source_file": "auth/session.py",
+      "source_location": "L20",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_is_expired",
+      "label": "is_expired",
+      "type": "function",
+      "description": "Function is_expired",
+      "source_file": "auth/session.py",
+      "source_location": "L27",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_sessionstore",
+      "label": "SessionStore",
+      "type": "class",
+      "description": "Class SessionStore",
+      "source_file": "auth/session.py",
+      "source_location": "L33",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session___init__",
+      "label": "__init__",
+      "type": "function",
+      "description": "Function __init__",
+      "source_file": "auth/session.py",
+      "source_location": "L36",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_create_session",
+      "label": "create_session",
+      "type": "function",
+      "description": "Function create_session",
+      "source_file": "auth/session.py",
+      "source_location": "L40",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_get_session",
+      "label": "get_session",
+      "type": "function",
+      "description": "Function get_session",
+      "source_file": "auth/session.py",
+      "source_location": "L48",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_destroy_session",
+      "label": "destroy_session",
+      "type": "function",
+      "description": "Function destroy_session",
+      "source_file": "auth/session.py",
+      "source_location": "L58",
+      "file_type": "code"
+    },
+    {
+      "id": "auth_session_purge_expired",
+      "label": "purge_expired",
+      "type": "function",
+      "description": "Function purge_expired",
+      "source_file": "auth/session.py",
+      "source_location": "L62",
+      "file_type": "code"
+    },
+    {
+      "id": "db___init__",
+      "label": "__init__.py",
+      "type": "module",
+      "description": "Python module db/__init__.py",
+      "source_file": "db/__init__.py",
+      "source_location": "L1",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models",
+      "label": "models.py",
+      "type": "module",
+      "description": "Python module db/models.py",
+      "source_file": "db/models.py",
+      "source_location": "L1",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models___future___annotations",
+      "label": "__future__.annotations",
+      "type": "import",
+      "description": "Import of __future__.annotations",
+      "source_file": "db/models.py",
+      "source_location": "L9",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models_dataclasses_dataclass",
+      "label": "dataclasses.dataclass",
+      "type": "import",
+      "description": "Import of dataclasses.dataclass",
+      "source_file": "db/models.py",
+      "source_location": "L11",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models_dataclasses_field",
+      "label": "dataclasses.field",
+      "type": "import",
+      "description": "Import of dataclasses.field",
+      "source_file": "db/models.py",
+      "source_location": "L11",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models_datetime_datetime",
+      "label": "datetime.datetime",
+      "type": "import",
+      "description": "Import of datetime.datetime",
+      "source_file": "db/models.py",
+      "source_location": "L12",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models_datetime_timezone",
+      "label": "datetime.timezone",
+      "type": "import",
+      "description": "Import of datetime.timezone",
+      "source_file": "db/models.py",
+      "source_location": "L12",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models__utcnow",
+      "label": "_utcnow",
+      "type": "function",
+      "description": "Function _utcnow",
+      "source_file": "db/models.py",
+      "source_location": "L15",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models_user",
+      "label": "User",
+      "type": "class",
+      "description": "Class User",
+      "source_file": "db/models.py",
+      "source_location": "L21",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models_from_row",
+      "label": "from_row",
+      "type": "function",
+      "description": "Function from_row",
+      "source_file": "db/models.py",
+      "source_location": "L35",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models_public_dict",
+      "label": "public_dict",
+      "type": "function",
+      "description": "Function public_dict",
+      "source_file": "db/models.py",
+      "source_location": "L45",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models_task",
+      "label": "Task",
+      "type": "class",
+      "description": "Class Task",
+      "source_file": "db/models.py",
+      "source_location": "L51",
+      "file_type": "code"
+    },
+    {
+      "id": "db_models_mark_done",
+      "label": "mark_done",
+      "type": "function",
+      "description": "Function mark_done",
+      "source_file": "db/models.py",
+      "source_location": "L71",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool",
+      "label": "pool.py",
+      "type": "module",
+      "description": "Python module db/pool.py",
+      "source_file": "db/pool.py",
+      "source_location": "L1",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool___future___annotations",
+      "label": "__future__.annotations",
+      "type": "import",
+      "description": "Import of __future__.annotations",
+      "source_file": "db/pool.py",
+      "source_location": "L9",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_sqlite3",
+      "label": "sqlite3",
+      "type": "import",
+      "description": "Import of sqlite3",
+      "source_file": "db/pool.py",
+      "source_location": "L11",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_threading",
+      "label": "threading",
+      "type": "import",
+      "description": "Import of threading",
+      "source_file": "db/pool.py",
+      "source_location": "L12",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_contextlib_contextmanager",
+      "label": "contextlib.contextmanager",
+      "type": "import",
+      "description": "Import of contextlib.contextmanager",
+      "source_file": "db/pool.py",
+      "source_location": "L13",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_typing_iterator",
+      "label": "typing.Iterator",
+      "type": "import",
+      "description": "Import of typing.Iterator",
+      "source_file": "db/pool.py",
+      "source_location": "L14",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_db_models_task",
+      "label": "db.models.Task",
+      "type": "import",
+      "description": "Import of db.models.Task",
+      "source_file": "db/pool.py",
+      "source_location": "L16",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_db_models_user",
+      "label": "db.models.User",
+      "type": "import",
+      "description": "Import of db.models.User",
+      "source_file": "db/pool.py",
+      "source_location": "L16",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_connectionpool",
+      "label": "ConnectionPool",
+      "type": "class",
+      "description": "Class ConnectionPool",
+      "source_file": "db/pool.py",
+      "source_location": "L19",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool___init__",
+      "label": "__init__",
+      "type": "function",
+      "description": "Function __init__",
+      "source_file": "db/pool.py",
+      "source_location": "L27",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool__open_all",
+      "label": "_open_all",
+      "type": "function",
+      "description": "Function _open_all",
+      "source_file": "db/pool.py",
+      "source_location": "L34",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_acquire",
+      "label": "acquire",
+      "type": "function",
+      "description": "Function acquire",
+      "source_file": "db/pool.py",
+      "source_location": "L42",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool__checkout",
+      "label": "_checkout",
+      "type": "function",
+      "description": "Function _checkout",
+      "source_file": "db/pool.py",
+      "source_location": "L50",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool__checkin",
+      "label": "_checkin",
+      "type": "function",
+      "description": "Function _checkin",
+      "source_file": "db/pool.py",
+      "source_location": "L57",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_close",
+      "label": "close",
+      "type": "function",
+      "description": "Function close",
+      "source_file": "db/pool.py",
+      "source_location": "L62",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_find_user_by_email",
+      "label": "find_user_by_email",
+      "type": "function",
+      "description": "Function find_user_by_email",
+      "source_file": "db/pool.py",
+      "source_location": "L69",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_insert_task",
+      "label": "insert_task",
+      "type": "function",
+      "description": "Function insert_task",
+      "source_file": "db/pool.py",
+      "source_location": "L79",
+      "file_type": "code"
+    },
+    {
+      "id": "db_pool_list_tasks_for_user",
+      "label": "list_tasks_for_user",
+      "type": "function",
+      "description": "Function list_tasks_for_user",
+      "source_file": "db/pool.py",
+      "source_location": "L91",
+      "file_type": "code"
+    }
+  ],
+  "links": [
+    {
+      "source": "api_routes",
+      "target": "api_routes___future___annotations",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes_typing_any",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes_auth_service_authservice",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes_db_models_task",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes_db_models_user",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes_db_pool_connectionpool",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes_db_pool_find_user_by_email",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes_db_pool_insert_task",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes_db_pool_list_tasks_for_user",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes_auth_session_session",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes_router",
+      "relation": "contains"
+    },
+    {
+      "source": "api_routes_router",
+      "target": "api_routes___init__",
+      "relation": "contains"
+    },
+    {
+      "source": "api_routes_router",
+      "target": "api_routes_login_route",
+      "relation": "contains"
+    },
+    {
+      "source": "api_routes_router",
+      "target": "api_routes_logout_route",
+      "relation": "contains"
+    },
+    {
+      "source": "api_routes_router",
+      "target": "api_routes_list_tasks_route",
+      "relation": "contains"
+    },
+    {
+      "source": "api_routes_router",
+      "target": "api_routes_create_task_route",
+      "relation": "contains"
+    },
+    {
+      "source": "api_routes_router",
+      "target": "api_routes_require_auth",
+      "relation": "contains"
+    },
+    {
+      "source": "api_routes_router",
+      "target": "api_routes_whoami_route",
+      "relation": "contains"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes__bearer_token",
+      "relation": "contains"
+    },
+    {
+      "source": "api_routes",
+      "target": "api_routes__load_user",
+      "relation": "contains"
+    },
+    {
+      "source": "api_server",
+      "target": "api_server___future___annotations",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_server",
+      "target": "api_server_dataclasses_dataclass",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_server",
+      "target": "api_server_typing_callable",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_server",
+      "target": "api_server_auth_service_authservice",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_server",
+      "target": "api_server_auth_session_sessionstore",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_server",
+      "target": "api_server_api_routes_response",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_server",
+      "target": "api_server_api_routes_router",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_server",
+      "target": "api_server_db_pool_connectionpool",
+      "relation": "imports_from"
+    },
+    {
+      "source": "api_server",
+      "target": "api_server_app",
+      "relation": "contains"
+    },
+    {
+      "source": "api_server_app",
+      "target": "api_server_dispatch",
+      "relation": "contains"
+    },
+    {
+      "source": "api_server",
+      "target": "api_server_build_app",
+      "relation": "contains"
+    },
+    {
+      "source": "api_server",
+      "target": "api_server_main",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service___future___annotations",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_hashlib",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_hmac",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_dataclasses_dataclass",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_auth_session_session",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_auth_session_sessionstore",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_db_models_user",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_db_pool_connectionpool",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_db_pool_find_user_by_email",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_hash_password",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_verify_password",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_loginresult",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_service",
+      "target": "auth_service_authservice",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_service_authservice",
+      "target": "auth_service___init__",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_service_authservice",
+      "target": "auth_service_login",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_service_authservice",
+      "target": "auth_service__check_user",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_service_authservice",
+      "target": "auth_service_logout",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_service_authservice",
+      "target": "auth_service_validate_token",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_session",
+      "target": "auth_session___future___annotations",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_session",
+      "target": "auth_session_secrets",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_session",
+      "target": "auth_session_dataclasses_dataclass",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_session",
+      "target": "auth_session_datetime_datetime",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_session",
+      "target": "auth_session_datetime_timedelta",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_session",
+      "target": "auth_session_datetime_timezone",
+      "relation": "imports_from"
+    },
+    {
+      "source": "auth_session",
+      "target": "auth_session_session",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_session_session",
+      "target": "auth_session_is_expired",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_session",
+      "target": "auth_session_sessionstore",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_session_sessionstore",
+      "target": "auth_session___init__",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_session_sessionstore",
+      "target": "auth_session_create_session",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_session_sessionstore",
+      "target": "auth_session_get_session",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_session_sessionstore",
+      "target": "auth_session_destroy_session",
+      "relation": "contains"
+    },
+    {
+      "source": "auth_session_sessionstore",
+      "target": "auth_session_purge_expired",
+      "relation": "contains"
+    },
+    {
+      "source": "db_models",
+      "target": "db_models___future___annotations",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_models",
+      "target": "db_models_dataclasses_dataclass",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_models",
+      "target": "db_models_dataclasses_field",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_models",
+      "target": "db_models_datetime_datetime",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_models",
+      "target": "db_models_datetime_timezone",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_models",
+      "target": "db_models__utcnow",
+      "relation": "contains"
+    },
+    {
+      "source": "db_models",
+      "target": "db_models_user",
+      "relation": "contains"
+    },
+    {
+      "source": "db_models_user",
+      "target": "db_models_from_row",
+      "relation": "contains"
+    },
+    {
+      "source": "db_models_user",
+      "target": "db_models_public_dict",
+      "relation": "contains"
+    },
+    {
+      "source": "db_models",
+      "target": "db_models_task",
+      "relation": "contains"
+    },
+    {
+      "source": "db_models_task",
+      "target": "db_models_from_row",
+      "relation": "contains"
+    },
+    {
+      "source": "db_models_task",
+      "target": "db_models_mark_done",
+      "relation": "contains"
+    },
+    {
+      "source": "db_models_task",
+      "target": "db_models_public_dict",
+      "relation": "contains"
+    },
+    {
+      "source": "db_pool",
+      "target": "db_pool___future___annotations",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_pool",
+      "target": "db_pool_sqlite3",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_pool",
+      "target": "db_pool_threading",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_pool",
+      "target": "db_pool_contextlib_contextmanager",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_pool",
+      "target": "db_pool_typing_iterator",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_pool",
+      "target": "db_pool_db_models_task",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_pool",
+      "target": "db_pool_db_models_user",
+      "relation": "imports_from"
+    },
+    {
+      "source": "db_pool",
+      "target": "db_pool_connectionpool",
+      "relation": "contains"
+    },
+    {
+      "source": "db_pool_connectionpool",
+      "target": "db_pool___init__",
+      "relation": "contains"
+    },
+    {
+      "source": "db_pool_connectionpool",
+      "target": "db_pool__open_all",
+      "relation": "contains"
+    },
+    {
+      "source": "db_pool_connectionpool",
+      "target": "db_pool_acquire",
+      "relation": "contains"
+    },
+    {
+      "source": "db_pool_connectionpool",
+      "target": "db_pool__checkout",
+      "relation": "contains"
+    },
+    {
+      "source": "db_pool_connectionpool",
+      "target": "db_pool__checkin",
+      "relation": "contains"
+    },
+    {
+      "source": "db_pool_connectionpool",
+      "target": "db_pool_close",
+      "relation": "contains"
+    },
+    {
+      "source": "db_pool",
+      "target": "db_pool_find_user_by_email",
+      "relation": "contains"
+    },
+    {
+      "source": "db_pool",
+      "target": "db_pool_insert_task",
+      "relation": "contains"
+    },
+    {
+      "source": "db_pool",
+      "target": "db_pool_list_tasks_for_user",
+      "relation": "contains"
+    }
+  ],
+  "built_at_commit": null
+}
