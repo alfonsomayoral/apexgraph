@@ -116,7 +116,9 @@ def test_semantic_backend_seeds_via_rrf(monkeypatch):
     monkeypatch.setattr(
         scorer,
         "_semantic_scores",
-        lambda graph, query, backend: {nid: (1.0 if nid == "login" else 0.05) for nid in graph.node_ids},
+        lambda graph, query, backend: {
+            nid: (1.0 if nid == "login" else 0.05) for nid in graph.node_ids
+        },
     )
     scores = score_nodes(g, "zzz nonlexical query", backend="local")
     assert scores["login"] > 0.0  # semantically seeded despite zero token overlap

@@ -55,20 +55,29 @@ def load_queries() -> list[dict]:
     return data["queries"]
 
 
-def graphex_select(graph, cache, query: str, budget: int, backend: str) -> tuple[set[str], int, int]:
+def graphex_select(
+    graph, cache, query: str, budget: int, backend: str
+) -> tuple[set[str], int, int]:
     """Run one Graphex backend for (query, budget). Returns (ids, n_selected, tokens)."""
     scores = score_nodes(graph, query, cache=cache, backend=backend)
-    sub, stats = select_subgraph(
-        graph, scores, budget, token_costs=cache.token_costs
-    )
+    sub, stats = select_subgraph(graph, scores, budget, token_costs=cache.token_costs)
     return set(sub.node_ids), int(stats["nodes_selected"]), int(stats["tokens_used"])
 
 
 def slurp_select(query: str, budget: int) -> tuple[set[str], int, int] | None:
     """Run slurp as a subprocess. Returns (ids, n_selected, tokens) or None if unavailable."""
     cmd = [
-        "uvx", "--from", "slurp-graph", "slurp", query,
-        "-g", str(GRAPH_PATH), "-b", str(budget), "-f", "json",
+        "uvx",
+        "--from",
+        "slurp-graph",
+        "slurp",
+        query,
+        "-g",
+        str(GRAPH_PATH),
+        "-b",
+        str(budget),
+        "-f",
+        "json",
     ]
     try:
         proc = subprocess.run(
@@ -82,7 +91,9 @@ def slurp_select(query: str, budget: int) -> tuple[set[str], int, int] | None:
         print(f"  [slurp unavailable: {exc}]", file=sys.stderr)
         return None
     if proc.returncode != 0:
-        print(f"  [slurp failed (rc={proc.returncode}): {proc.stderr.strip()[:200]}]", file=sys.stderr)
+        print(
+            f"  [slurp failed (rc={proc.returncode}): {proc.stderr.strip()[:200]}]", file=sys.stderr
+        )
         return None
     try:
         data = json.loads(proc.stdout)
@@ -124,12 +135,16 @@ def main() -> int:
             # Graphex bm25
             gx_ids, gx_n, gx_tok = graphex_select(graph, cache, query, budget, "bm25")
             r, p = metrics(gx_ids, relevant)
-            rows.append(_row("graphex-bm25", query, qtype, budget, gx_n, gx_tok, r, p, len(relevant)))
+            rows.append(
+                _row("graphex-bm25", query, qtype, budget, gx_n, gx_tok, r, p, len(relevant))
+            )
 
             # Graphex local (semantic)
             lx_ids, lx_n, lx_tok = graphex_select(graph, cache, query, budget, "local")
             r, p = metrics(lx_ids, relevant)
-            rows.append(_row("graphex-local", query, qtype, budget, lx_n, lx_tok, r, p, len(relevant)))
+            rows.append(
+                _row("graphex-local", query, qtype, budget, lx_n, lx_tok, r, p, len(relevant))
+            )
 
             # slurp (black box)
             key = (query, budget)
@@ -137,8 +152,20 @@ def main() -> int:
                 slurp_cache[key] = slurp_select(query, budget)
             sl = slurp_cache[key]
             if sl is None:
-                rows.append(_row("slurp", query, qtype, budget, None, None, None, None, len(relevant),
-                                 available=False))
+                rows.append(
+                    _row(
+                        "slurp",
+                        query,
+                        qtype,
+                        budget,
+                        None,
+                        None,
+                        None,
+                        None,
+                        len(relevant),
+                        available=False,
+                    )
+                )
             else:
                 sl_ids, sl_n, sl_tok = sl
                 r, p = metrics(sl_ids, relevant)
@@ -155,8 +182,9 @@ def main() -> int:
     return 0
 
 
-def _row(tool, query, qtype, budget, n_selected, tokens, recall, precision, n_relevant,
-         available=True) -> dict:
+def _row(
+    tool, query, qtype, budget, n_selected, tokens, recall, precision, n_relevant, available=True
+) -> dict:
     return {
         "tool": tool,
         "query": query,
@@ -203,6 +231,7 @@ def aggregate(rows: list[dict]) -> dict:
 
 # -- rendering ---------------------------------------------------------------
 
+
 def _cell(v, pct=False):
     if v is None:
         return "n/a"
@@ -213,16 +242,18 @@ def render_per_query(rows: list[dict]) -> str:
     headers = ("query", "type", "budget", "tool", "sel", "tokens", "recall", "prec")
     table: list[tuple[str, ...]] = []
     for r in rows:
-        table.append((
-            r["query"][:24],
-            r["type"],
-            str(r["budget"]),
-            r["tool"],
-            _cell(r["nodes_selected"]),
-            _cell(r["tokens_used"]),
-            _cell(r["recall"], pct=True),
-            _cell(r["precision"], pct=True),
-        ))
+        table.append(
+            (
+                r["query"][:24],
+                r["type"],
+                str(r["budget"]),
+                r["tool"],
+                _cell(r["nodes_selected"]),
+                _cell(r["tokens_used"]),
+                _cell(r["recall"], pct=True),
+                _cell(r["precision"], pct=True),
+            )
+        )
     widths = [len(h) for h in headers]
     for row in table:
         for i, c in enumerate(row):
@@ -233,8 +264,12 @@ def render_per_query(rows: list[dict]) -> str:
         parts += [str(vals[i]).rjust(widths[i]) for i in range(1, len(vals))]
         return "  ".join(parts)
 
-    lines = ["Per-query results (recall@budget primary metric)", "", fmt(headers),
-             "  ".join("-" * w for w in widths)]
+    lines = [
+        "Per-query results (recall@budget primary metric)",
+        "",
+        fmt(headers),
+        "  ".join("-" * w for w in widths),
+    ]
     lines += [fmt(r) for r in table]
     return "\n".join(lines)
 
@@ -245,12 +280,15 @@ def render_aggregate(agg: dict) -> str:
     for tool in sorted(agg):
         for scope in ("lexical", "semantic", "overall"):
             m = agg[tool][scope]
-            table.append((
-                tool, scope,
-                _cell(m["mean_recall"], pct=True),
-                _cell(m["mean_precision"], pct=True),
-                str(m["n"]),
-            ))
+            table.append(
+                (
+                    tool,
+                    scope,
+                    _cell(m["mean_recall"], pct=True),
+                    _cell(m["mean_precision"], pct=True),
+                    str(m["n"]),
+                )
+            )
     widths = [len(h) for h in headers]
     for row in table:
         for i, c in enumerate(row):
@@ -261,8 +299,12 @@ def render_aggregate(agg: dict) -> str:
         parts += [str(vals[i]).rjust(widths[i]) for i in range(2, len(vals))]
         return "  ".join(parts)
 
-    lines = ["Aggregate (mean over queries x budgets)", "", fmt(headers),
-             "  ".join("-" * w for w in widths)]
+    lines = [
+        "Aggregate (mean over queries x budgets)",
+        "",
+        fmt(headers),
+        "  ".join("-" * w for w in widths),
+    ]
     lines += [fmt(r) for r in table]
     return "\n".join(lines)
 
