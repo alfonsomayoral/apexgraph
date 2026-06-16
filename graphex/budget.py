@@ -37,6 +37,10 @@ _NODE_OVERHEAD_TOKENS = 12
 # centrality noise. Shared by the CLI, MCP server, and benchmark.
 DEFAULT_MIN_SCORE = 0.05
 
+# The tiktoken encoding token costs are cached for; passing a different --model
+# bypasses the precomputed costs (they are recomputed inline instead).
+DEFAULT_TOKEN_MODEL = "cl100k_base"
+
 
 @functools.lru_cache(maxsize=8)
 def _encoding(model: str) -> tiktoken.Encoding:
@@ -94,10 +98,19 @@ def _node_cost(
     if token_costs is not None and node_id in token_costs:
         base = token_costs[node_id]
     else:
-        base = count_tokens(_node_body(graph, node_id, None), model) + _NODE_OVERHEAD_TOKENS
+        base = base_node_cost(graph, node_id, model)
     if code_block:
         base += count_tokens(code_block, model)
     return base
+
+
+def base_node_cost(graph: KnowledgeGraph, node_id: str, model: str = DEFAULT_TOKEN_MODEL) -> int:
+    """Base token cost of a node (body WITHOUT code + per-node overhead).
+
+    The query-independent cost a caching layer can precompute once and feed back
+    via ``select_subgraph(token_costs=...)``.
+    """
+    return count_tokens(_node_body(graph, node_id, None), model) + _NODE_OVERHEAD_TOKENS
 
 
 def _extract_codes(

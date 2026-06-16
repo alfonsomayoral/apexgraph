@@ -15,13 +15,16 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from graphex.budget import DEFAULT_TOKEN_MODEL, base_node_cost
 from graphex.models import KnowledgeGraph
 from graphex.retrieval.bm25 import BM25Index
 from graphex.retrieval.ppr import global_pagerank
 
 CACHE_DIRNAME = ".graphex"
 CACHE_FILENAME = "cache.json"
-_CACHE_VERSION = 2
+# Bump whenever the meaning of a cached artifact changes (e.g. the tokenizer
+# started stemming, which alters the BM25 index) so stale caches are discarded.
+_CACHE_VERSION = 3
 
 
 @dataclass(slots=True)
@@ -31,6 +34,10 @@ class CachedArtifacts:
     fingerprint: str
     bm25: BM25Index
     global_pagerank: dict[str, float]
+    # Base token cost per node (no code) for DEFAULT_TOKEN_MODEL; fed back into
+    # select_subgraph to skip re-tokenizing every candidate on each query.
+    token_costs: dict[str, int]
+    token_model: str = DEFAULT_TOKEN_MODEL
 
 
 def _cache_path(base_dir: Path) -> Path:
@@ -43,6 +50,7 @@ def build_artifacts(graph: KnowledgeGraph) -> CachedArtifacts:
         fingerprint=graph.fingerprint(),
         bm25=BM25Index.from_graph(graph),
         global_pagerank=global_pagerank(graph),
+        token_costs={nid: base_node_cost(graph, nid) for nid in graph.node_ids},
     )
 
 
@@ -93,9 +101,16 @@ def _try_read(path: Path, fingerprint: str) -> CachedArtifacts | None:
     try:
         bm25 = BM25Index.from_dict(data["bm25"])
         global_pr = {str(k): float(v) for k, v in data["global_pagerank"].items()}
+        token_costs = {str(k): int(v) for k, v in data["token_costs"].items()}
     except (KeyError, TypeError, ValueError):
         return None
-    return CachedArtifacts(fingerprint=fingerprint, bm25=bm25, global_pagerank=global_pr)
+    return CachedArtifacts(
+        fingerprint=fingerprint,
+        bm25=bm25,
+        global_pagerank=global_pr,
+        token_costs=token_costs,
+        token_model=str(data.get("token_model", DEFAULT_TOKEN_MODEL)),
+    )
 
 
 def _write(path: Path, artifacts: CachedArtifacts) -> None:
@@ -104,6 +119,8 @@ def _write(path: Path, artifacts: CachedArtifacts) -> None:
         "fingerprint": artifacts.fingerprint,
         "bm25": artifacts.bm25.to_dict(),
         "global_pagerank": artifacts.global_pagerank,
+        "token_costs": artifacts.token_costs,
+        "token_model": artifacts.token_model,
     }
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
