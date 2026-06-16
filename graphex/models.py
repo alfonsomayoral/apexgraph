@@ -246,12 +246,17 @@ class KnowledgeGraph:
     def fingerprint(self) -> str:
         """Stable content hash, used to invalidate the on-disk cache.
 
-        Derived from the sorted node IDs, edge tuples (with transition weights),
-        and hyperedge membership — i.e. everything that affects scoring.
+        Derived from the sorted node IDs, their searchable text, edge tuples
+        (with transition weights), and hyperedge membership — i.e. everything
+        that feeds the cached BM25 index and PageRank. Node text is included so
+        that editing a label/description (id unchanged) correctly invalidates
+        the cached lexical scores.
         """
         h = hashlib.sha256()
         for nid in sorted(self.digraph.nodes):
             h.update(nid.encode("utf-8"))
+            h.update(b"\x00")
+            h.update(self.node_text(nid).encode("utf-8"))
             h.update(b"\x00")
         for u, v, data in sorted(self.digraph.edges(data=True)):
             w = float(data.get("weight", 1.0)) * float(data.get("confidence_score", 1.0))

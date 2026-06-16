@@ -21,7 +21,7 @@ from graphex.retrieval.ppr import global_pagerank
 
 CACHE_DIRNAME = ".graphex"
 CACHE_FILENAME = "cache.json"
-_CACHE_VERSION = 1
+_CACHE_VERSION = 2
 
 
 @dataclass(slots=True)
