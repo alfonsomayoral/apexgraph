@@ -185,6 +185,19 @@ def cli(ctx: click.Context) -> None:
 @click.option(
     "--strategy", type=click.Choice(["greedy", "exact"]), default="greedy", show_default=True
 )
+@click.option(
+    "--backend",
+    type=click.Choice(["bm25", "local", "openai", "voyage"]),
+    default="bm25",
+    show_default=True,
+    help="Scoring backend. 'local' adds offline semantic recall (needs [local]); "
+    "'openai'/'voyage' use cloud embeddings (need [dense] + an API key).",
+)
+@click.option(
+    "--connected",
+    is_flag=True,
+    help="Guarantee a connected subgraph (add minimal bridge nodes within budget).",
+)
 @click.option("--ignore-file", default=".graphexignore", show_default=True)
 @click.option("--no-cache", is_flag=True, help="Skip the on-disk cache.")
 @click.option("--no-audit", is_flag=True, help="Skip writing to the audit log.")
@@ -202,6 +215,8 @@ def query_cmd(
     inject_code: bool,
     project_root: str | None,
     strategy: str,
+    backend: str,
+    connected: bool,
     ignore_file: str,
     no_cache: bool,
     no_audit: bool,
@@ -224,10 +239,13 @@ def query_cmd(
 
     breakdown = None
     if explain:
-        breakdown = score_nodes_detailed(kg, query, cache=cache)
+        breakdown = score_nodes_detailed(kg, query, cache=cache, backend=backend)
         scores = breakdown.final
     else:
-        scores = score_nodes(kg, query, cache=cache)
+        scores = score_nodes(kg, query, cache=cache, backend=backend)
+
+    # Reuse the precomputed base token costs when the encoding matches the cached one.
+    token_costs = cache.token_costs if model == cache.token_model else None
 
     root = Path(project_root) if project_root else graph_path.parent
     sub, stats = select_subgraph(
@@ -241,6 +259,8 @@ def query_cmd(
         inject_code=inject_code,
         project_root=root,
         strategy=strategy,
+        token_costs=token_costs,
+        connected=connected,
     )
 
     from graphex.formatter import format_subgraph
@@ -344,7 +364,14 @@ def stats(graph: str | None) -> None:
 )
 @click.option("--ignore-file", default=".graphexignore", show_default=True)
 @click.option("--incremental", is_flag=True, help="Only re-index files whose content changed.")
-def index_cmd(path: str, output: str | None, ignore_file: str, incremental: bool) -> None:
+@click.option(
+    "--strict-ids",
+    is_flag=True,
+    help="Collision-free node ids (full-path module ids, scope-qualified symbols).",
+)
+def index_cmd(
+    path: str, output: str | None, ignore_file: str, incremental: bool, strict_ids: bool
+) -> None:
     """Build a graph.json by statically indexing a source tree (no LLM)."""
     import json
 
@@ -358,9 +385,9 @@ def index_cmd(path: str, output: str | None, ignore_file: str, incremental: bool
     click.echo(f"Indexing {root} ...")
     if incremental:
         cache_path = root / ".graphex" / "index_cache.json"
-        graph = index_project_incremental(root, cache_path, ignore)
+        graph = index_project_incremental(root, cache_path, ignore, strict_ids=strict_ids)
     else:
-        graph = index_project(root, ignore)
+        graph = index_project(root, ignore, strict_ids=strict_ids)
 
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(graph, indent=2), encoding="utf-8")
