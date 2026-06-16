@@ -33,12 +33,13 @@ nodes — that simpler tools throw away.
 ## Install
 
 ```bash
-uv tool install graphex            # or: pipx install graphex
+uv tool install apexgraph            # or: pipx install apexgraph
 # optional extras:
-uv tool install "graphex[ts]"      # better TypeScript indexing (tree-sitter)
-uv tool install "graphex[dense]"   # OpenAI/Anthropic embedding backend
+uv tool install "apexgraph[ts]"      # better TypeScript indexing (tree-sitter)
+uv tool install "apexgraph[dense]"   # OpenAI/Anthropic embedding backend
 ```
 
+The PyPI distribution is `apexgraph`; the command and import name are `graphex`.
 Requires Python 3.12+.
 
 ## How it works

@@ -3,7 +3,8 @@
 Graphex publishes via **Trusted Publishing** (OIDC) from GitHub Actions — no API
 token is ever stored. The release workflow lives in
 [`.github/workflows/publish.yml`](.github/workflows/publish.yml) and runs when a
-GitHub Release is published.
+GitHub Release is published. The PyPI distribution name is **`apexgraph`** (the
+command and import name remain `graphex`).
 
 ## One-time setup (per maintainer)
 
@@ -11,7 +12,7 @@ GitHub Release is published.
    two-factor authentication (required).
 2. **Add a pending trusted publisher** at
    <https://pypi.org/manage/account/publishing/> with:
-   - PyPI Project Name: `graphex`
+   - PyPI Project Name: `apexgraph`
    - Owner: `alfonsomayoral`
    - Repository name: `graphex`
    - Workflow name: `publish.yml`
@@ -38,7 +39,7 @@ GitHub Release is published.
 ## Verify
 
 ```bash
-uv tool install graphex
+uv tool install apexgraph
 graphex --version
 ```
 

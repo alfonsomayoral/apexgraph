@@ -1,5 +1,5 @@
 [project]
-name = "graphex"
+name = "apexgraph"
 version = "0.1.0"
 description = "Apex-relevance subgraph retrieval for AI agents. Feed your LLM the peak of your knowledge graph, sized to a token budget."
 readme = "README.md"
