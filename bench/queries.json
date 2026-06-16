@@ -1,0 +1,120 @@
+{
+  "_comment": "Labeled query set for the Graphex-vs-slurp retrieval benchmark. Relevant sets are defined by MEANING (what a human would consider on-topic), not by any tool's output. 'lexical' queries share tokens with the relevant node ids/labels; 'semantic' queries deliberately share NO tokens with their relevant nodes but mean the same thing. The semantic queries are the discriminator: TF-IDF (slurp) and bm25 (graphex) cannot match on shared tokens, only the local embedding backend can.",
+  "queries": [
+    {
+      "query": "login authentication",
+      "type": "lexical",
+      "relevant": [
+        "auth_service",
+        "auth_service_authservice",
+        "auth_service_login",
+        "auth_service__check_user",
+        "auth_service_verify_password",
+        "auth_service_loginresult",
+        "api_routes_login_route"
+      ]
+    },
+    {
+      "query": "connection pool",
+      "type": "lexical",
+      "relevant": [
+        "db_pool",
+        "db_pool_connectionpool",
+        "db_pool___init__",
+        "db_pool__open_all",
+        "db_pool_acquire",
+        "db_pool__checkout",
+        "db_pool__checkin",
+        "db_pool_close"
+      ]
+    },
+    {
+      "query": "session token",
+      "type": "lexical",
+      "relevant": [
+        "auth_session",
+        "auth_session_session",
+        "auth_session_sessionstore",
+        "auth_session_create_session",
+        "auth_session_get_session",
+        "auth_session_destroy_session",
+        "auth_service_validate_token"
+      ]
+    },
+    {
+      "query": "create task insert",
+      "type": "lexical",
+      "relevant": [
+        "db_models_task",
+        "db_pool_insert_task",
+        "api_routes_create_task_route",
+        "db_pool_list_tasks_for_user",
+        "api_routes_list_tasks_route"
+      ]
+    },
+    {
+      "query": "password hashing",
+      "type": "lexical",
+      "relevant": [
+        "auth_service_hash_password",
+        "auth_service_verify_password",
+        "auth_service_hashlib",
+        "auth_service_hmac"
+      ]
+    },
+    {
+      "query": "sign in flow",
+      "type": "semantic",
+      "relevant": [
+        "auth_service",
+        "auth_service_authservice",
+        "auth_service_login",
+        "auth_service__check_user",
+        "auth_service_verify_password",
+        "auth_service_loginresult",
+        "api_routes_login_route"
+      ]
+    },
+    {
+      "query": "authorization gate",
+      "type": "semantic",
+      "relevant": [
+        "api_routes_require_auth",
+        "auth_service_validate_token",
+        "api_routes__bearer_token"
+      ]
+    },
+    {
+      "query": "data store connection",
+      "type": "semantic",
+      "relevant": [
+        "db_pool",
+        "db_pool_connectionpool",
+        "db_pool_acquire",
+        "db_pool__open_all",
+        "db_pool__checkout",
+        "db_pool__checkin"
+      ]
+    },
+    {
+      "query": "user sign-up account",
+      "type": "semantic",
+      "relevant": [
+        "db_models_user",
+        "db_pool_find_user_by_email",
+        "db_models_from_row",
+        "auth_service_hash_password"
+      ]
+    },
+    {
+      "query": "log out and end session",
+      "type": "semantic",
+      "relevant": [
+        "auth_service_logout",
+        "api_routes_logout_route",
+        "auth_session_destroy_session",
+        "auth_session_purge_expired"
+      ]
+    }
+  ]
+}
