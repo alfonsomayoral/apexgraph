@@ -27,7 +27,7 @@ graphex "how does auth work" -b 4000  # retrieve the apex subgraph
 ## 🎯 The problem
 
 Knowledge graphs — the kind [`graphify`](https://github.com/) builds from a
-codebase — get **big**. A real app app indexes to ~9,000 nodes. When an
+codebase — get **big**. A real app can index to thousands of nodes. When an
 agent needs context about *one* corner of it, the usual options are both bad:
 
 - **Dump the whole graph** → tens of thousands of tokens, most of them irrelevant,
@@ -133,41 +133,37 @@ code-only index and retrieves.
 
 <div align="center">
 
-| metric | repo | graphify | **graphex** |
+| metric | codebase | graphify | **graphex** |
 |---|---|:---:|:---:|
-| 🎯 **on-topic precision** | Repo A · Python, clean | 31% | **59%** `bm25` |
-| 🎯 **on-topic precision** | Repo B · RN app, ~58% i18n | 3% | **47%** `local` |
-| 🧹 **i18n noise** | Repo B | 80% | **0%** |
+| 🎯 **on-topic precision** | Repo A · clean backend | 31% | **59%** `bm25` |
+| 🎯 **on-topic precision** | Repo B · localized app | 3% | **47%** `local` |
+| 🧹 **localization-string noise** | Repo B | 80% | **0%** |
 | 🎈 **nodes returned** (avg) | both | ~39 | **~24** |
 | ⚡ **latency / query** | both | 0.5–0.8 s | **<0.2 s** |
 
-*Repo A: 477-node graph, no i18n — a clean test of pure retrieval.
-Repo B: 9.3k-node graph, ~58% translation strings.*
+*Repo A: ~480-node graph, no localization strings — a clean test of pure retrieval.
+Repo B: ~9k-node graph, ~58% localization strings.*
 
 </div>
 
-Graphex is **~2× more precise on the clean Python repo** (pure retrieval quality,
-no noise to hide behind) and **~16× more precise on the noisy mobile repo** — its
-own indexer keeps only code, and its scoring ranks the *actual* feature code to
-the top instead of walking into translation strings:
+Graphex is **~2× more precise on the clean backend** (pure retrieval quality, no
+noise to hide behind) and **~16× more precise on the localization-heavy app** —
+its own indexer keeps only code, and its scoring ranks the *actual* feature code
+to the top instead of walking into translation strings:
 
 ```text
-query "AI coaching"
-  graphify → file.json, file.json, file.json …   (translation files first)
-  graphex  → Component, Component, Component, store
-
-query "supabase management api client"
-  graphify → mostly unrelated helpers + config        (precision 0%)
-  graphex  → Client, management HTTP calls, account tools
+query for a feature
+  graphify → leads with localization files and unrelated config
+  graphex  → the actual components, functions and stores for that feature
 ```
 
-And it builds those graphs itself, fast: **540 Python nodes in ~0.9 s**, or
-**5,178 nodes from a 391-file app in ~1.5 s** — no LLM required.
+And it builds those graphs itself, fast: **~500 code nodes in under a second**, or
+**5k+ nodes from a few hundred files in ~1.5 s** — no LLM required.
 
 > **Which backend?** `bm25` (default) wins on well-named code where symbols already
 > describe themselves; the offline `local` backend wins when the query vocabulary
 > differs from the symbol names (natural-language questions, or UI code). graphify
-> still edges ahead on a few tight single-file lookups (e.g. `module.py`).
+> still edges ahead on the occasional tight single-module lookup.
 >
 > *Precision = returned nodes that are on-topic feature code; recall isn't compared
 > because the two tools index different node universes. Methodology and a separate
