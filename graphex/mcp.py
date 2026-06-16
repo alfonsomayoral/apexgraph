@@ -201,7 +201,7 @@ def _tool_query(args: dict[str, Any], graph: KnowledgeGraph, cache: CachedArtifa
         raise _ToolError(INVALID_PARAMS, f"unknown format {fmt!r}; expected markdown/json/yaml")
 
     scores = score_nodes(graph, query, cache=cache)
-    sub, stats = select_subgraph(graph, scores, budget)
+    sub, stats = select_subgraph(graph, scores, budget, token_costs=cache.token_costs)
     return format_subgraph(sub, stats, format=fmt, scores=scores, query=query)
 
 
