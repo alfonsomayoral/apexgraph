@@ -31,4 +31,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Optional dense-embedding backend (OpenAI / Anthropic) behind the `[dense]` extra.
 - Benchmark reporting recall@budget alongside token savings.
 
+### Security
+- Code injection (`--inject-code`) is contained to the project root: a crafted
+  `source_file` in an untrusted graph can no longer read arbitrary host files via
+  absolute paths or `..` traversal.
+- The interactive visualisation loads vis-network from a pinned, immutable CDN
+  URL with a Subresource Integrity (SRI) hash, so a compromised CDN cannot inject
+  script into a generated page.
+
 [Unreleased]: https://github.com/alfonsomayoral/graphex/commits/main

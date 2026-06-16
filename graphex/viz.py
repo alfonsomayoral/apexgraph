@@ -29,6 +29,12 @@ from typing import Any
 
 from graphex.models import KnowledgeGraph
 
+# vis-network is loaded from a pinned, integrity-checked CDN URL. The version is
+# immutable on unpkg, so the SHA-384 below stays valid; regenerate it only when
+# bumping the version (see the note at the <script> tag).
+_VIS_NETWORK_VERSION = "10.1.0"
+_VIS_NETWORK_SRI = "sha384-Kp7cMaDnHOrgpE8FT6l7tUuGIo7kBcBVcttockpXN/whrsQBcy9ZcpKmr/1a/nMo"
+
 # A small categorical palette cycled by ``community`` index. Picked to read well
 # on the dark canvas below; god nodes override the border (see _node_records).
 _PALETTE: tuple[str, ...] = (
@@ -228,14 +234,18 @@ def build_html(
     banner_stats = html.escape(_stats_line(stats))
     title = html.escape(query) if query else "Graphex subgraph"
 
-    cdn = "https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"
+    # Pinned + Subresource Integrity: the version URL is immutable and the browser
+    # refuses to run the script unless its hash matches, so a compromised CDN can't
+    # inject code into a Graphex-generated page. Regenerate the hash if bumping the
+    # version: curl -sL <url> | openssl dgst -sha384 -binary | openssl base64
+    cdn = f"https://unpkg.com/vis-network@{_VIS_NETWORK_VERSION}/standalone/umd/vis-network.min.js"
 
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <title>{title}</title>
-<script src="{cdn}"></script>
+<script src="{cdn}" integrity="{_VIS_NETWORK_SRI}" crossorigin="anonymous"></script>
 <style>
 {_STYLE}
 </style>

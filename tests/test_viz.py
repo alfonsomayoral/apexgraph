@@ -2,11 +2,29 @@
 
 from __future__ import annotations
 
+import base64
+import binascii
 import json
 from pathlib import Path
 
 from graphex.models import Edge, KnowledgeGraph, Node
-from graphex.viz import build_html, write_html
+from graphex.viz import _VIS_NETWORK_SRI, build_html, write_html
+
+
+def test_sri_constant_is_well_formed() -> None:
+    # A valid SHA-384 SRI is "sha384-" + base64 of a 48-byte digest. This catches
+    # a truncated/garbled hash (which would silently break the CDN script) offline,
+    # without a network round-trip in CI.
+    assert _VIS_NETWORK_SRI.startswith("sha384-")
+    digest = base64.b64decode(_VIS_NETWORK_SRI.removeprefix("sha384-"), validate=True)
+    assert len(digest) == 48
+
+
+def test_sri_constant_decodes() -> None:
+    try:
+        base64.b64decode(_VIS_NETWORK_SRI.removeprefix("sha384-"), validate=True)
+    except binascii.Error:  # pragma: no cover
+        raise AssertionError("SRI hash is not valid base64") from None
 
 
 def _build_graph() -> KnowledgeGraph:
@@ -50,7 +68,10 @@ def _stats() -> dict[str, object]:
 def test_build_html_basic_structure() -> None:
     out = build_html(_build_graph(), _stats(), query="how are stats computed")
     assert "<html" in out
-    assert "https://unpkg.com/vis-network/standalone/umd/vis-network.min.js" in out
+    # CDN script is pinned to an immutable version and integrity-checked (SRI).
+    assert "https://unpkg.com/vis-network@10.1.0/standalone/umd/vis-network.min.js" in out
+    assert 'integrity="sha384-' in out
+    assert 'crossorigin="anonymous"' in out
     assert "how are stats computed" in out
     assert "recalcPlayerStats" in out
     # Stats banner subtitle is present.
