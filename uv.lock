@@ -44,6 +44,60 @@ wheels = [
 ]
 
 [[package]]
+name = "apexgraph"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "click" },
+    { name = "networkx" },
+    { name = "pathspec" },
+    { name = "rich" },
+    { name = "tiktoken" },
+]
+
+[package.optional-dependencies]
+dense = [
+    { name = "anthropic" },
+    { name = "openai" },
+]
+ts = [
+    { name = "tree-sitter" },
+    { name = "tree-sitter-typescript" },
+]
+viz = [
+    { name = "watchdog" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "black" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", marker = "extra == 'dense'", specifier = ">=0.34" },
+    { name = "click", specifier = ">=8.1" },
+    { name = "networkx", specifier = ">=3.2" },
+    { name = "openai", marker = "extra == 'dense'", specifier = ">=1.40" },
+    { name = "pathspec", specifier = ">=0.12" },
+    { name = "rich", specifier = ">=13.7" },
+    { name = "tiktoken", specifier = ">=0.7" },
+    { name = "tree-sitter", marker = "extra == 'ts'", specifier = ">=0.22" },
+    { name = "tree-sitter-typescript", marker = "extra == 'ts'", specifier = ">=0.23" },
+    { name = "watchdog", marker = "extra == 'viz'", specifier = ">=4.0" },
+]
+provides-extras = ["ts", "dense", "viz"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "black", specifier = ">=24.0" },
+    { name = "pytest", specifier = ">=8.0" },
+    { name = "ruff", specifier = ">=0.6" },
+]
+
+[[package]]
 name = "black"
 version = "26.5.1"
 source = { registry = "https://pypi.org/simple" }
@@ -194,60 +248,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e0/4d/f332313098c1de1b2d2ff91cf2674415cc7cddab2ca1b01ae29774bd5fdf/docstring_parser-0.18.0.tar.gz", hash = "sha256:292510982205c12b1248696f44959db3cdd1740237a968ea1e2e7a900eeb2015", size = 29341, upload-time = "2026-04-14T04:09:19.867Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a7/5f/ed01f9a3cdffbd5a008556fc7b2a08ddb1cc6ace7effa7340604b1d16699/docstring_parser-0.18.0-py3-none-any.whl", hash = "sha256:b3fcbed555c47d8479be0796ef7e19c2670d428d72e96da63f3a40122860374b", size = 22484, upload-time = "2026-04-14T04:09:18.638Z" },
-]
-
-[[package]]
-name = "graphex"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "click" },
-    { name = "networkx" },
-    { name = "pathspec" },
-    { name = "rich" },
-    { name = "tiktoken" },
-]
-
-[package.optional-dependencies]
-dense = [
-    { name = "anthropic" },
-    { name = "openai" },
-]
-ts = [
-    { name = "tree-sitter" },
-    { name = "tree-sitter-typescript" },
-]
-viz = [
-    { name = "watchdog" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "black" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "anthropic", marker = "extra == 'dense'", specifier = ">=0.34" },
-    { name = "click", specifier = ">=8.1" },
-    { name = "networkx", specifier = ">=3.2" },
-    { name = "openai", marker = "extra == 'dense'", specifier = ">=1.40" },
-    { name = "pathspec", specifier = ">=0.12" },
-    { name = "rich", specifier = ">=13.7" },
-    { name = "tiktoken", specifier = ">=0.7" },
-    { name = "tree-sitter", marker = "extra == 'ts'", specifier = ">=0.22" },
-    { name = "tree-sitter-typescript", marker = "extra == 'ts'", specifier = ">=0.23" },
-    { name = "watchdog", marker = "extra == 'viz'", specifier = ">=4.0" },
-]
-provides-extras = ["ts", "dense", "viz"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "black", specifier = ">=24.0" },
-    { name = "pytest", specifier = ">=8.0" },
-    { name = "ruff", specifier = ">=0.6" },
 ]
 
 [[package]]
