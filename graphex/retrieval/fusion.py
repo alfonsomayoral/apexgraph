@@ -20,22 +20,18 @@ from graphex.retrieval.base import normalize
 def importance_prior(graph: KnowledgeGraph) -> dict[str, float]:
     """A ``[0, 1]`` prior from graphify ``importance`` and god-node flags.
 
-    God nodes are floored at 1.0; everything else scales by its importance
-    relative to the most important node. Graphs with no importance signal
-    return all zeros (the prior then contributes nothing).
+    Real importances are normalized first (so ordinary nodes keep their relative
+    ordering), then god nodes are pinned to 1.0 on top. Graphs with no importance
+    signal and no god nodes return all zeros (the prior then contributes nothing).
     """
-    ids = graph.node_ids
-    raw: dict[str, float] = {}
-    for nid in ids:
-        attrs = graph.digraph.nodes[nid]
-        val = float(attrs.get("importance", 0.0) or 0.0)
-        if attrs.get("is_god"):
-            val = max(val, _GOD_FLOOR)
-        raw[nid] = val
-    return normalize(raw)
-
-
-_GOD_FLOOR = 1e9  # god nodes always end up at the top of the normalized prior
+    importances = {
+        nid: float(graph.digraph.nodes[nid].get("importance", 0.0) or 0.0) for nid in graph.node_ids
+    }
+    prior = normalize(importances)
+    for nid in graph.node_ids:
+        if graph.digraph.nodes[nid].get("is_god"):
+            prior[nid] = 1.0
+    return prior
 
 
 def fuse(
