@@ -25,8 +25,8 @@ from graphex.indexer.python import index_python
 from graphex.indexer.typescript import index_typescript
 
 # Extension → indexer. The callable signature is
-# ``(path: Path, root: Path | None) -> tuple[list[dict], list[dict]]``.
-_INDEXED_EXTENSIONS: dict[str, Callable[[Path, Path | None], tuple[list[dict], list[dict]]]] = {
+# ``(path: Path, root: Path | None, strict_ids: bool) -> tuple[list[dict], list[dict]]``.
+_INDEXED_EXTENSIONS: dict[str, Callable[..., tuple[list[dict], list[dict]]]] = {
     ".py": index_python,
     ".ts": index_typescript,
     ".tsx": index_typescript,
@@ -142,7 +142,7 @@ def _assemble(
     }
 
 
-def index_project(root: Path, ignore: Any | None = None) -> dict:
+def index_project(root: Path, ignore: Any | None = None, strict_ids: bool = False) -> dict:
     """Statically index an entire source tree into a graphify-compatible dict.
 
     Walks ``root`` (skipping the standard ignore set and symlinks), runs the
@@ -153,6 +153,9 @@ def index_project(root: Path, ignore: Any | None = None) -> dict:
         root: tree to index.
         ignore: optional object with ``should_ignore(node, node_id) -> bool`` to
             filter nodes out of the result.
+        strict_ids: when true, indexers emit collision-free ids (full-path module
+            ids and scope-qualified symbol ids); the default is the unchanged
+            graphify-compatible scheme.
 
     Returns:
         ``{"nodes": [...], "links": [...], "built_at_commit": None}``.
@@ -162,7 +165,7 @@ def index_project(root: Path, ignore: Any | None = None) -> dict:
     raw_edges: list[dict] = []
     for path in _iter_source_files(root):
         indexer = _INDEXED_EXTENSIONS[path.suffix.lower()]
-        nodes, edges = indexer(path, root)
+        nodes, edges = indexer(path, root, strict_ids)
         raw_nodes.extend(nodes)
         raw_edges.extend(edges)
     return _assemble(raw_nodes, raw_edges, ignore)
@@ -201,7 +204,9 @@ def _load_cache(cache_path: Path) -> dict[str, dict]:
     return data
 
 
-def index_project_incremental(root: Path, cache_path: Path, ignore: Any | None = None) -> dict:
+def index_project_incremental(
+    root: Path, cache_path: Path, ignore: Any | None = None, strict_ids: bool = False
+) -> dict:
     """Incrementally index ``root``, reusing cached results for unchanged files.
 
     A sidecar JSON at ``cache_path`` maps ``source_file -> {hash, nodes, edges}``.
@@ -216,6 +221,9 @@ def index_project_incremental(root: Path, cache_path: Path, ignore: Any | None =
         cache_path: location of the sidecar JSON (created if absent).
         ignore: optional ``should_ignore(node, node_id)`` filter, applied to the
             assembled result (cached nodes are filtered too).
+        strict_ids: forwarded to the per-file indexers for newly indexed files
+            (see :func:`index_project`). Keep a cache per id-scheme: mixing strict
+            and default runs against one sidecar would reuse mismatched ids.
     """
     root = Path(root)
     cache_path = Path(cache_path)
@@ -241,7 +249,7 @@ def index_project_incremental(root: Path, cache_path: Path, ignore: Any | None =
             edges = cached["edges"]
         else:
             indexer = _INDEXED_EXTENSIONS[path.suffix.lower()]
-            nodes, edges = indexer(path, root)
+            nodes, edges = indexer(path, root, strict_ids)
 
         new_cache[source_file] = {"hash": file_hash, "nodes": nodes, "edges": edges}
         raw_nodes.extend(nodes)

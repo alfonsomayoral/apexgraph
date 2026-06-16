@@ -33,12 +33,28 @@ def normalize_id(name: str) -> str:
     return "".join(c if c.isalnum() or c == "_" else "_" for c in name.lower())
 
 
-def module_id_for(path: Path) -> str:
+def module_id_for(path: Path, root: Path | None = None, strict_ids: bool = False) -> str:
     """Compute the module/file node id for ``path``.
 
-    The id is ``{immediate_parent_dir}_{filename_stem}`` (only ONE level of
-    parent dir; a top-level file uses just its stem), normalized to ``[a-z0-9_]``.
+    In the default (graphify-compatible) scheme the id is
+    ``{immediate_parent_dir}_{filename_stem}`` (only ONE level of parent dir; a
+    top-level file uses just its stem), normalized to ``[a-z0-9_]``.
+
+    In **strict mode** the id is the FULL path relative to ``root`` with every
+    component joined by ``_`` (e.g. ``a/b/util.py`` -> ``a_b_util``), so two files
+    sharing only an immediate-parent dir + stem no longer collide. When ``root``
+    is unknown the path is used as-is. Both schemes drop the file extension.
     """
+    if strict_ids:
+        rel = path
+        if root is not None:
+            try:
+                rel = path.relative_to(root)
+            except ValueError:
+                rel = path
+        parts = list(rel.with_suffix("").parts)
+        return normalize_id("_".join(parts))
+
     stem = path.stem
     parent = path.parent.name
     if parent:
@@ -46,9 +62,16 @@ def module_id_for(path: Path) -> str:
     return normalize_id(stem)
 
 
-def symbol_id_for(module_id: str, symbol_name: str) -> str:
-    """Compute a symbol node id as ``{module_id}_{symbol_name}`` (normalized)."""
-    return normalize_id(f"{module_id}_{symbol_name}")
+def symbol_id_for(module_id: str, symbol_name: str, scope: list[str] | None = None) -> str:
+    """Compute a symbol node id, normalized to ``[a-z0-9_]``.
+
+    The default id is ``{module_id}_{symbol_name}``. When ``scope`` is given (the
+    chain of enclosing class/function names, outermost first) the id becomes
+    ``{module_id}_{scope...}_{symbol_name}`` so a method ``foo`` inside ``class C``
+    (scope ``["C"]``) gets a different id than a top-level ``foo``.
+    """
+    parts = [module_id, *(scope or []), symbol_name]
+    return normalize_id("_".join(parts))
 
 
 def relative_source(path: Path, root: Path | None) -> str:
@@ -91,12 +114,19 @@ def make_edge(source: str, target: str, relation: str) -> dict:
 # ---------------------------------------------------------------------------
 
 
-def index_python(path: Path, root: Path | None = None) -> tuple[list[dict], list[dict]]:
+def index_python(
+    path: Path, root: Path | None = None, strict_ids: bool = False
+) -> tuple[list[dict], list[dict]]:
     """Statically index a single Python file into ``(nodes, edges)``.
 
     Emits a module node, then walks classes, functions and imports, wiring
     ``contains`` edges from each enclosing scope to its members and
     ``imports_from`` edges from the module to each imported name.
+
+    When ``strict_ids`` is true the module id uses the full relative path and
+    symbol ids are scope-qualified (a method ``foo`` in ``class C`` differs from a
+    top-level ``foo``), so genuinely distinct symbols never share an id. The
+    default scheme is graphify-compatible and unchanged.
 
     On a syntax error (unparseable source) or an OS error (unreadable file)
     this returns ``([], [])`` rather than raising, so a single bad file never
@@ -112,7 +142,7 @@ def index_python(path: Path, root: Path | None = None) -> tuple[list[dict], list
         return [], []
 
     source_file = relative_source(path, root)
-    module_id = module_id_for(path)
+    module_id = module_id_for(path, root, strict_ids)
 
     nodes: list[dict] = [
         make_node(
@@ -145,11 +175,16 @@ def index_python(path: Path, root: Path | None = None) -> tuple[list[dict], list
         )
         edges.append(make_edge(module_id, import_id, "imports_from"))
 
-    def walk(scope_node: ast.AST, scope_id: str) -> None:
-        """Recurse the direct children of ``scope_node`` (a module or class body)."""
+    def walk(scope_node: ast.AST, scope_id: str, scope: list[str]) -> None:
+        """Recurse the direct children of ``scope_node`` (a module or class body).
+
+        ``scope`` is the chain of enclosing class/function names (outermost
+        first); in strict mode it is folded into each symbol id so nested symbols
+        stay distinct. In the default mode it is left empty so ids are unchanged.
+        """
         for child in ast.iter_child_nodes(scope_node):
             if isinstance(child, ast.ClassDef):
-                class_id = symbol_id_for(module_id, child.name)
+                class_id = symbol_id_for(module_id, child.name, scope)
                 nodes.append(
                     make_node(
                         class_id,
@@ -161,9 +196,9 @@ def index_python(path: Path, root: Path | None = None) -> tuple[list[dict], list
                     )
                 )
                 edges.append(make_edge(scope_id, class_id, "contains"))
-                walk(child, class_id)
+                walk(child, class_id, [*scope, child.name] if strict_ids else scope)
             elif isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                func_id = symbol_id_for(module_id, child.name)
+                func_id = symbol_id_for(module_id, child.name, scope)
                 nodes.append(
                     make_node(
                         func_id,
@@ -175,7 +210,7 @@ def index_python(path: Path, root: Path | None = None) -> tuple[list[dict], list
                     )
                 )
                 edges.append(make_edge(scope_id, func_id, "contains"))
-                walk(child, func_id)
+                walk(child, func_id, [*scope, child.name] if strict_ids else scope)
             elif isinstance(child, ast.Import):
                 for alias in child.names:
                     emit_import(alias.asname or alias.name, child.lineno)
@@ -186,5 +221,5 @@ def index_python(path: Path, root: Path | None = None) -> tuple[list[dict], list
                     full = f"{base}.{name}" if base else name
                     emit_import(full, child.lineno)
 
-    walk(tree, module_id)
+    walk(tree, module_id, [])
     return nodes, edges

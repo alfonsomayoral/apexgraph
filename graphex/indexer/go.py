@@ -31,6 +31,8 @@ from graphex.indexer.python import (
 _RE_PACKAGE = re.compile(r"^\s*package\s+([A-Za-z_]\w*)")
 # func Name(...)  /  func (r Recv) Name(...)
 _RE_FUNC = re.compile(r"^\s*func\s+(?:\([^)]*\)\s*)?([A-Za-z_]\w*)\s*(?:\[[^\]]*\])?\s*\(")
+# Receiver type of a method: func (r *Recv) Name(...) -> "Recv" (pointer stripped).
+_RE_METHOD_RECV = re.compile(r"^\s*func\s+\(\s*(?:[A-Za-z_]\w*\s+)?\*?([A-Za-z_]\w*)\s*\)")
 _RE_TYPE_STRUCT = re.compile(r"^\s*type\s+([A-Za-z_]\w*)\s+struct\b")
 _RE_TYPE_INTERFACE = re.compile(r"^\s*type\s+([A-Za-z_]\w*)\s+interface\b")
 _RE_IMPORT_SINGLE = re.compile(r"""^\s*import\s+(?:[A-Za-z_.]\w*\s+)?['"]([^'"]+)['"]""")
@@ -38,13 +40,20 @@ _RE_IMPORT_BLOCK_OPEN = re.compile(r"^\s*import\s*\(")
 _RE_IMPORT_BLOCK_LINE = re.compile(r"""^\s*(?:[A-Za-z_.]\w*\s+)?['"]([^'"]+)['"]""")
 
 
-def index_go(path: Path, root: Path | None = None) -> tuple[list[dict], list[dict]]:
+def index_go(
+    path: Path, root: Path | None = None, strict_ids: bool = False
+) -> tuple[list[dict], list[dict]]:
     """Statically index a single Go file into ``(nodes, edges)``.
 
     Emits a module node for the package, then function / struct / interface
     nodes (each with a ``contains`` edge from the module) and import nodes (each
     with an ``imports_from`` edge). Returns ``([], [])`` if the file is
     unreadable.
+
+    When ``strict_ids`` is true the module id uses the full relative path and a
+    receiver method is qualified by its receiver type (a method ``Save`` on
+    ``*User`` differs from a top-level ``Save``), so distinct symbols never share
+    an id. The default scheme is graphify-compatible and unchanged.
     """
     try:
         source = path.read_text(encoding="utf-8")
@@ -52,7 +61,7 @@ def index_go(path: Path, root: Path | None = None) -> tuple[list[dict], list[dic
         return [], []
 
     source_file = relative_source(path, root)
-    module_id = module_id_for(path)
+    module_id = module_id_for(path, root, strict_ids)
 
     nodes: list[dict] = [
         make_node(
@@ -68,8 +77,8 @@ def index_go(path: Path, root: Path | None = None) -> tuple[list[dict], list[dic
     seen_symbols: set[str] = set()
     seen_imports: set[str] = set()
 
-    def emit_symbol(name: str, node_type: str, lineno: int) -> None:
-        symbol_id = symbol_id_for(module_id, name)
+    def emit_symbol(name: str, node_type: str, lineno: int, scope: list[str] | None = None) -> None:
+        symbol_id = symbol_id_for(module_id, name, scope if strict_ids else None)
         if symbol_id in seen_symbols:
             return
         seen_symbols.add(symbol_id)
@@ -130,7 +139,9 @@ def index_go(path: Path, root: Path | None = None) -> tuple[list[dict], list[dic
             continue
         match = _RE_FUNC.match(line)
         if match:
-            emit_symbol(match.group(1), "function", index)
+            recv = _RE_METHOD_RECV.match(line)
+            scope = [recv.group(1)] if recv else None
+            emit_symbol(match.group(1), "function", index, scope)
             continue
         match = _RE_IMPORT_SINGLE.match(line)
         if match:

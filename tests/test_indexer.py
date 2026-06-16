@@ -323,3 +323,147 @@ def test_indexed_graph_loads(tmp_path: Path) -> None:
     kg = load_graph(graph_path)
     assert len(kg) == len(graph["nodes"])
     assert "pkg_a" in kg.node_ids
+
+
+# ---------------------------------------------------------------------------
+# Strict ids (collision-free mode)
+# ---------------------------------------------------------------------------
+
+
+def test_strict_ids_distinguish_same_named_files(tmp_path: Path) -> None:
+    # a/b/util.py and x/b/util.py share parent dir + stem -> default collides.
+    (tmp_path / "a" / "b").mkdir(parents=True)
+    (tmp_path / "x" / "b").mkdir(parents=True)
+    a_util = tmp_path / "a" / "b" / "util.py"
+    x_util = tmp_path / "x" / "b" / "util.py"
+    a_util.write_text("def helper():\n    pass\n", encoding="utf-8")
+    x_util.write_text("def helper():\n    pass\n", encoding="utf-8")
+
+    # Default mode: both collapse to the same module + symbol id.
+    a_default, _ = index_python(a_util, root=tmp_path)
+    x_default, _ = index_python(x_util, root=tmp_path)
+    a_mod = next(n["id"] for n in a_default if n["type"] == "module")
+    x_mod = next(n["id"] for n in x_default if n["type"] == "module")
+    assert a_mod == x_mod == "b_util"
+
+    # Strict mode: full relative path -> distinct module + symbol ids.
+    a_strict, _ = index_python(a_util, root=tmp_path, strict_ids=True)
+    x_strict, _ = index_python(x_util, root=tmp_path, strict_ids=True)
+    a_ids = {n["id"] for n in a_strict}
+    x_ids = {n["id"] for n in x_strict}
+    assert "a_b_util" in a_ids
+    assert "x_b_util" in x_ids
+    assert "a_b_util_helper" in a_ids
+    assert "x_b_util_helper" in x_ids
+    # No shared ids between the two distinct files.
+    assert a_ids.isdisjoint(x_ids)
+
+
+def test_strict_ids_scope_qualify_method_vs_function(tmp_path: Path) -> None:
+    src = tmp_path / "svc.py"
+    src.write_text(
+        "class C:\n" "    def foo(self):\n" "        pass\n" "\n" "def foo():\n" "    pass\n",
+        encoding="utf-8",
+    )
+
+    # Default mode: the method and the top-level function collide on one id.
+    default_nodes, _ = index_python(src, root=tmp_path)
+    module_id = next(n["id"] for n in default_nodes if n["type"] == "module")
+    foo_ids_default = {n["id"] for n in default_nodes if n["label"] == "foo"}
+    assert foo_ids_default == {f"{module_id}_foo"}  # both map to the same id
+
+    # Strict mode: method foo is scope-qualified by its class -> distinct ids.
+    strict_nodes, _ = index_python(src, root=tmp_path, strict_ids=True)
+    strict_module = next(n["id"] for n in strict_nodes if n["type"] == "module")
+    strict_ids = {n["id"] for n in strict_nodes}
+    assert f"{strict_module}_c_foo" in strict_ids  # the method
+    assert f"{strict_module}_foo" in strict_ids  # the top-level function
+    assert f"{strict_module}_c_foo" != f"{strict_module}_foo"
+
+
+def test_strict_ids_go_receiver_method(tmp_path: Path) -> None:
+    src = tmp_path / "store.go"
+    src.write_text(
+        "package store\n"
+        "\n"
+        "type User struct {\n"
+        "}\n"
+        "\n"
+        "func Save() {}\n"
+        "\n"
+        "func (u *User) Save() error {\n"
+        "\treturn nil\n"
+        "}\n",
+        encoding="utf-8",
+    )
+
+    # Default: the package func Save and the *User receiver method Save collide.
+    default_nodes, _ = index_go(src, root=tmp_path)
+    save_ids_default = {n["id"] for n in default_nodes if n["label"] == "Save"}
+    assert len(save_ids_default) == 1
+
+    # Strict: the receiver method is qualified by its receiver type.
+    strict_nodes, _ = index_go(src, root=tmp_path, strict_ids=True)
+    module_id = next(n["id"] for n in strict_nodes if n["type"] == "module")
+    strict_ids = {n["id"] for n in strict_nodes}
+    assert f"{module_id}_save" in strict_ids  # top-level func Save
+    assert f"{module_id}_user_save" in strict_ids  # method Save on *User
+
+
+def test_strict_ids_typescript_method_vs_function(tmp_path: Path) -> None:
+    src = tmp_path / "client.ts"
+    src.write_text(
+        "export class Client {\n" "  send() {}\n" "}\n" "\n" "export function send() {}\n",
+        encoding="utf-8",
+    )
+
+    strict_nodes, _ = index_typescript(src, root=tmp_path, strict_ids=True)
+    module_id = next(n["id"] for n in strict_nodes if n["type"] == "module")
+    strict_ids = {n["id"] for n in strict_nodes}
+    # The top-level function is always present (both parsers recover it).
+    assert f"{module_id}_send" in strict_ids
+    # When tree-sitter is available the method is scope-qualified; the regex
+    # fallback only sees top-level decls, so the method may be absent. Either
+    # way the top-level function id is never overwritten by a method.
+    if f"{module_id}_client_send" in strict_ids:
+        assert f"{module_id}_client_send" != f"{module_id}_send"
+
+
+def test_index_project_strict_ids_no_dropped_nodes(tmp_path: Path) -> None:
+    # Two same-named files in different dirs + a method/function name clash:
+    # default mode drops nodes to collisions; strict mode keeps them all.
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    (tmp_path / "a" / "mod.py").write_text(
+        "class C:\n    def run(self):\n        pass\n\ndef run():\n    pass\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "b" / "mod.py").write_text(
+        "class C:\n    def run(self):\n        pass\n\ndef run():\n    pass\n",
+        encoding="utf-8",
+    )
+
+    # Each file in strict mode yields: module, class C, method run, func run = 4.
+    a_nodes, _ = index_python(tmp_path / "a" / "mod.py", root=tmp_path, strict_ids=True)
+    b_nodes, _ = index_python(tmp_path / "b" / "mod.py", root=tmp_path, strict_ids=True)
+    expected = len(a_nodes) + len(b_nodes)
+    assert expected == 8  # 4 distinct nodes per file, no intra-file collision
+
+    graph = index_project(tmp_path, strict_ids=True)
+    ids = [n["id"] for n in graph["nodes"]]
+    # No id collisions dropped anything: count matches the per-file sum.
+    assert len(ids) == len(set(ids))
+    assert len(ids) == expected
+
+
+def test_index_project_strict_ids_graph_loads(tmp_path: Path) -> None:
+    _build_small_tree(tmp_path)
+    graph = index_project(tmp_path, strict_ids=True)
+
+    graph_path = tmp_path / "graph.json"
+    graph_path.write_text(json.dumps(graph), encoding="utf-8")
+
+    kg = load_graph(graph_path)
+    assert len(kg) == len(graph["nodes"])
+    # Strict module id uses the full relative path.
+    assert "pkg_a" in kg.node_ids

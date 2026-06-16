@@ -50,7 +50,12 @@ _RE_IMPORT_BARE = re.compile(r"""^\s*import\s+['"]([^'"]+)['"]""")
 def _index_typescript_regex(
     path: Path, source: str, source_file: str, module_id: str
 ) -> tuple[list[dict], list[dict]]:
-    """Line-oriented regex indexer used as the tree-sitter fallback."""
+    """Line-oriented regex indexer used as the tree-sitter fallback.
+
+    The regex parser only recovers top-level declarations, so there is no
+    enclosing class/function scope to qualify against; ``strict_ids`` therefore
+    only affects the module id (computed by the caller), not symbol ids here.
+    """
     nodes: list[dict] = [
         make_node(
             module_id,
@@ -124,7 +129,7 @@ def _index_typescript_regex(
 
 
 def _index_typescript_treesitter(
-    path: Path, source: str, source_file: str, module_id: str
+    path: Path, source: str, source_file: str, module_id: str, strict_ids: bool = False
 ) -> tuple[list[dict], list[dict]]:
     """tree-sitter indexer. Raises ImportError when the grammar is unavailable.
 
@@ -132,6 +137,9 @@ def _index_typescript_treesitter(
     arrow-function consts and imports. Any structural surprise simply yields a
     smaller graph rather than failing — the caller treats exceptions as a signal
     to fall back to the regex parser.
+
+    In ``strict_ids`` mode a method is qualified by its enclosing class name so a
+    method ``foo`` in ``class C`` no longer collides with a top-level ``foo``.
     """
     import tree_sitter_typescript as tstypescript
     from tree_sitter import Language, Parser
@@ -164,8 +172,15 @@ def _index_typescript_treesitter(
         field = node.child_by_field_name("name")
         return text_of(field) if field is not None else None
 
-    def emit(name: str, node_type: str, lineno: int, scope_id: str, relation: str) -> str | None:
-        symbol_id = symbol_id_for(module_id, name)
+    def emit(
+        name: str,
+        node_type: str,
+        lineno: int,
+        scope_id: str,
+        relation: str,
+        scope: list[str] | None = None,
+    ) -> str | None:
+        symbol_id = symbol_id_for(module_id, name, scope if strict_ids else None)
         if symbol_id in seen:
             return symbol_id
         seen.add(symbol_id)
@@ -206,6 +221,7 @@ def _index_typescript_treesitter(
                                         member.start_point[0] + 1,
                                         class_id,
                                         "contains",
+                                        scope=[name],
                                     )
                 continue
             elif kind == "interface_declaration":
@@ -246,12 +262,18 @@ def _index_typescript_treesitter(
     return nodes, edges
 
 
-def index_typescript(path: Path, root: Path | None = None) -> tuple[list[dict], list[dict]]:
+def index_typescript(
+    path: Path, root: Path | None = None, strict_ids: bool = False
+) -> tuple[list[dict], list[dict]]:
     """Statically index a single TypeScript / JavaScript file into ``(nodes, edges)``.
 
     Tries the tree-sitter parser first and falls back to the regex parser on any
     ``ImportError`` (grammar not installed) or parse failure. Returns ``([], [])``
     only when the source file itself cannot be read.
+
+    When ``strict_ids`` is true the module id uses the full relative path and
+    methods are qualified by their enclosing class, so distinct symbols never
+    share an id. The default scheme is graphify-compatible and unchanged.
     """
     try:
         source = path.read_text(encoding="utf-8")
@@ -259,9 +281,9 @@ def index_typescript(path: Path, root: Path | None = None) -> tuple[list[dict], 
         return [], []
 
     source_file = relative_source(path, root)
-    module_id = module_id_for(path)
+    module_id = module_id_for(path, root, strict_ids)
 
     try:
-        return _index_typescript_treesitter(path, source, source_file, module_id)
+        return _index_typescript_treesitter(path, source, source_file, module_id, strict_ids)
     except Exception:
         return _index_typescript_regex(path, source, source_file, module_id)
