@@ -87,10 +87,10 @@ graphex "auth flow" --explain               # per-node BM25 / PPR / prior breakd
 graphex "auth flow" --inject-code           # include real function bodies, still in budget
 graphex "auth flow" --viz                   # interactive force-directed HTML
 
-# Inspect
-graphex stats
-graphex explain auth_service_login
-graphex path api_routes_login_route auth_service_authservice
+# Inspect (node ids come from your indexed graph; these match examples/)
+graphex stats -g examples/sample_graph.json
+graphex explain auth_service_login -g examples/sample_graph.json
+graphex path auth_service auth_service_login -g examples/sample_graph.json
 
 # Export a context block to paste into a system prompt / CLAUDE.md
 graphex export "auth flow" -f claudemd -o CONTEXT.md
