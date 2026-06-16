@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -104,7 +105,18 @@ def _assemble(
     for node in raw_nodes:
         node_id = node["id"]
         if node_id in nodes_by_id:
-            continue  # first writer wins
+            # First writer wins, but a clash between two *different* source files
+            # means the id scheme collapsed two distinct symbols — warn instead of
+            # silently dropping one (its source coordinates would be wrong).
+            kept = nodes_by_id[node_id].get("source_file")
+            dropped = node.get("source_file")
+            if kept and dropped and kept != dropped:
+                print(
+                    f"warning: node id {node_id!r} collides across "
+                    f"{kept!r} and {dropped!r}; keeping the first.",
+                    file=sys.stderr,
+                )
+            continue
         if ignore is not None and ignore.should_ignore(node, node_id):
             continue
         nodes_by_id[node_id] = node
