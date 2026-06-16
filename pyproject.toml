@@ -1,0 +1,74 @@
+[project]
+name = "graphex"
+version = "0.1.0"
+description = "Apex-relevance subgraph retrieval for AI agents. Feed your LLM the peak of your knowledge graph, sized to a token budget."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Alfonso Mayoral", email = "alfonsomayoral29@gmail.com" }]
+keywords = [
+    "knowledge-graph",
+    "llm",
+    "rag",
+    "token-budget",
+    "graphify",
+    "pagerank",
+    "bm25",
+    "mcp",
+    "ai-tools",
+    "cli",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Documentation",
+]
+dependencies = [
+    "click>=8.1",
+    "networkx>=3.2",
+    "pathspec>=0.12",
+    "rich>=13.7",
+    "tiktoken>=0.7",
+]
+
+[project.optional-dependencies]
+ts = ["tree-sitter>=0.22", "tree-sitter-typescript>=0.23"]
+dense = ["openai>=1.40", "anthropic>=0.34"]
+viz = ["watchdog>=4.0"]
+
+[project.urls]
+Homepage = "https://github.com/alfonsomayoral/graphex"
+Repository = "https://github.com/alfonsomayoral/graphex"
+Issues = "https://github.com/alfonsomayoral/graphex/issues"
+
+[project.scripts]
+graphex = "graphex.cli:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["graphex"]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.6", "black>=24.0"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
