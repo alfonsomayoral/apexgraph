@@ -61,6 +61,7 @@ dev = ["pytest>=8.0", "ruff>=0.6", "black>=24.0"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+extend-exclude = ["examples"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
@@ -69,6 +70,7 @@ ignore = ["E501"]
 [tool.black]
 line-length = 100
 target-version = ["py312"]
+extend-exclude = "examples"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
