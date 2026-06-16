@@ -35,8 +35,9 @@ nodes — that simpler tools throw away.
 ```bash
 uv tool install apexgraph            # or: pipx install apexgraph
 # optional extras:
+uv tool install "apexgraph[local]"   # offline semantic recall (model2vec)
 uv tool install "apexgraph[ts]"      # better TypeScript indexing (tree-sitter)
-uv tool install "apexgraph[dense]"   # OpenAI/Anthropic embedding backend
+uv tool install "apexgraph[dense]"   # cloud embeddings (OpenAI / Voyage AI)
 ```
 
 The PyPI distribution is `apexgraph`; the command and import name are `graphex`.
@@ -75,6 +76,13 @@ DP-knapsack mode is available for benchmarking the value ceiling.
 form*, including any injected source code — so `tokens_used` never lies and the
 output never overflows the budget you asked for.
 
+**Semantic recall, optionally offline.** By default retrieval is lexical (BM25,
+with stemming). Add `--backend local` for offline embeddings (model2vec, no API
+key, no network) so a query finds what it's *about* even with no shared tokens —
+"authorization gate" surfaces the auth code. The lexical and semantic rankings
+are fused with Reciprocal Rank Fusion. Cloud embeddings (`openai`, `voyage`) are
+also available behind the `[dense]` extra.
+
 ## Usage
 
 ```bash
@@ -84,8 +92,10 @@ graphex index ./src --incremental          # re-index only changed files
 
 # Query (any unrecognised first arg routes here)
 graphex "session token validation" -b 2000
+graphex "authorization gate" --backend local # offline semantic recall (no shared tokens needed)
 graphex "auth flow" --explain               # per-node BM25 / PPR / prior breakdown
 graphex "auth flow" --inject-code           # include real function bodies, still in budget
+graphex "auth flow" --connected             # guarantee a single connected subgraph
 graphex "auth flow" --viz                   # interactive force-directed HTML
 
 # Inspect (node ids come from your indexed graph; these match examples/)
@@ -126,6 +136,13 @@ claude mcp add graphex -- graphex serve --graph /abs/path/to/graph.json
 Graphex reports **recall@budget** alongside it: how much of the relevant set the
 budgeted subgraph actually captures. High savings with low recall means
 under-retrieval, and the benchmark makes that trade-off visible.
+
+A reproducible head-to-head against [slurp](https://github.com/CarlosVallejoRuiz/slurp)
+lives in [`bench/`](bench/). The honest takeaway: slurp posts higher *raw* recall
+by padding the budget with low-relevance nodes (≈8% precision — most of what it
+returns is off-topic), while Graphex is **4–10× more precise** under budget, and
+its `local` backend recovers relevant nodes on semantic queries where lexical
+retrieval (slurp's TF-IDF and Graphex's own BM25) scores zero.
 
 ## Development
 

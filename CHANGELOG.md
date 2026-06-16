@@ -4,6 +4,30 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Offline semantic recall** — a local embedding backend (`--backend local`,
+  model2vec, behind the `[local]` extra) finds nodes the query is *about* even
+  with no shared tokens. BM25 and the semantic ranking are fused with Reciprocal
+  Rank Fusion to seed Personalized PageRank.
+- **Stemming** in the tokenizer so morphological variants match (e.g. a query for
+  "authentication" matches a node labelled "authenticate").
+- **`--connected`** — guarantee a single connected subgraph by adding minimal
+  bridge nodes (approximate Steiner), never exceeding the budget.
+- **`--strict-ids`** indexer mode for collision-free node ids (full-path module
+  ids, scope-qualified symbols).
+- Per-node token costs are precomputed and cached, so a query no longer
+  re-tokenizes every candidate.
+- A reproducible **Graphex-vs-slurp benchmark** under `bench/` (recall, precision
+  and token cost on labeled queries).
+
+### Changed
+- The cloud `anthropic` embedding backend (which called a non-existent endpoint)
+  is replaced by a correct **Voyage AI** backend (`--backend voyage`).
+- Global PageRank is reconnected as a light structural tiebreak in the final
+  score (it was computed and cached but no longer consumed).
+
 ## [0.1.0] - 2026-06-16
 
 ### Added
@@ -39,4 +63,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   URL with a Subresource Integrity (SRI) hash, so a compromised CDN cannot inject
   script into a generated page.
 
+[Unreleased]: https://github.com/alfonsomayoral/graphex/compare/v0.1.0...main
 [0.1.0]: https://github.com/alfonsomayoral/graphex/releases/tag/v0.1.0
