@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from graphex.models import Edge, Hyperedge, KnowledgeGraph, Node
-from graphex.scorer import score_nodes, score_nodes_detailed
+from apexgraph.models import Edge, Hyperedge, KnowledgeGraph, Node
+from apexgraph.scorer import score_nodes, score_nodes_detailed
 
 
 def _auth_graph() -> KnowledgeGraph:
@@ -108,7 +108,7 @@ def test_semantic_backend_seeds_via_rrf(monkeypatch):
     # A query with NO lexical overlap should still surface a node when the
     # semantic backend ranks it high — validates the RRF seeding wiring without
     # needing a real embedding model (we inject the semantic scores).
-    import graphex.scorer as scorer
+    import apexgraph.scorer as scorer
 
     g = _auth_graph()
     # A realistic semantic backend scores every node; here "login" is the clear

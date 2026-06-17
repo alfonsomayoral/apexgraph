@@ -1,6 +1,6 @@
 """Render a selected subgraph as a self-contained interactive HTML page.
 
-Where :mod:`~graphex.formatter` produces token-friendly *text* for an LLM, this
+Where :mod:`~apexgraph.formatter` produces token-friendly *text* for an LLM, this
 module produces a *visual* artifact for a human: a force-directed graph the user
 can open straight from disk (``file://``) and explore — pan, zoom, hover for
 details. It has no Python dependencies of its own; the only runtime requirement
@@ -8,8 +8,8 @@ is the `vis-network <https://visjs.github.io/vis-network/>`_ library, which the
 page pulls from a CDN via a ``<script src>`` tag. The selected nodes and edges
 are embedded as JSON in an inline ``<script>``.
 
-The contract mirrors :func:`graphex.formatter.format_subgraph`: it takes the
-already-pruned :class:`~graphex.models.KnowledgeGraph`, the ``stats`` budget
+The contract mirrors :func:`apexgraph.formatter.format_subgraph`: it takes the
+already-pruned :class:`~apexgraph.models.KnowledgeGraph`, the ``stats`` budget
 dict, optional per-node ``scores`` and the originating ``query``.
 
 Safety: every piece of graph/user text reaches the page through
@@ -27,7 +27,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from graphex.models import KnowledgeGraph
+from apexgraph.models import KnowledgeGraph
 
 # vis-network is loaded from a pinned, integrity-checked CDN URL. The version is
 # immutable on unpkg, so the SHA-384 below stays valid; regenerate it only when
@@ -181,7 +181,7 @@ _STYLE = """
 
 def _empty_html(query: str) -> str:
     """A valid standalone page used when the subgraph has no nodes."""
-    title = html.escape(query) if query else "Graphex"
+    title = html.escape(query) if query else "Apexgraph"
     return (
         "<!DOCTYPE html>\n"
         '<html lang="en">\n<head>\n<meta charset="utf-8">\n'
@@ -230,13 +230,13 @@ def build_html(
     nodes_json = json.dumps(nodes).replace("</", "<\\/")
     edges_json = json.dumps(edges).replace("</", "<\\/")
 
-    banner_query = html.escape(query) if query else "Graphex subgraph"
+    banner_query = html.escape(query) if query else "Apexgraph subgraph"
     banner_stats = html.escape(_stats_line(stats))
-    title = html.escape(query) if query else "Graphex subgraph"
+    title = html.escape(query) if query else "Apexgraph subgraph"
 
     # Pinned + Subresource Integrity: the version URL is immutable and the browser
     # refuses to run the script unless its hash matches, so a compromised CDN can't
-    # inject code into a Graphex-generated page. Regenerate the hash if bumping the
+    # inject code into a Apexgraph-generated page. Regenerate the hash if bumping the
     # version: curl -sL <url> | openssl dgst -sha384 -binary | openssl base64
     cdn = f"https://unpkg.com/vis-network@{_VIS_NETWORK_VERSION}/standalone/umd/vis-network.min.js"
 

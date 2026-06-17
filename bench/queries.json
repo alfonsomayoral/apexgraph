@@ -1,5 +1,5 @@
 {
-  "_comment": "Labeled query set for the Graphex-vs-slurp retrieval benchmark. Relevant sets are defined by MEANING (what a human would consider on-topic), not by any tool's output. 'lexical' queries share tokens with the relevant node ids/labels; 'semantic' queries deliberately share NO tokens with their relevant nodes but mean the same thing. The semantic queries are the discriminator: TF-IDF (slurp) and bm25 (graphex) cannot match on shared tokens, only the local embedding backend can.",
+  "_comment": "Labeled query set for the Apexgraph-vs-slurp retrieval benchmark. Relevant sets are defined by MEANING (what a human would consider on-topic), not by any tool's output. 'lexical' queries share tokens with the relevant node ids/labels; 'semantic' queries deliberately share NO tokens with their relevant nodes but mean the same thing. The semantic queries are the discriminator: TF-IDF (slurp) and bm25 (apexgraph) cannot match on shared tokens, only the local embedding backend can.",
   "queries": [
     {
       "query": "login authentication",

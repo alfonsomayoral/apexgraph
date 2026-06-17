@@ -1,7 +1,7 @@
-# Graphex vs slurp — retrieval benchmark
+# Apexgraph vs slurp — retrieval benchmark
 
-A reproducible harness comparing **Graphex** against **slurp** (the prior-art
-tool Graphex improves on) on token-budgeted knowledge-graph retrieval. The
+A reproducible harness comparing **Apexgraph** against **slurp** (the prior-art
+tool Apexgraph improves on) on token-budgeted knowledge-graph retrieval. The
 primary metric is **recall@budget**; precision and token cost are reported
 alongside it because, as the results show, recall alone is gameable.
 
@@ -13,8 +13,8 @@ how much of a **human-labeled relevant set** each one recovers within the budget
 
 | retriever        | how it runs                                        | retrieval signal |
 |------------------|----------------------------------------------------|------------------|
-| `graphex-bm25`   | in-process (`score_nodes(..., backend="bm25")`)    | lexical (BM25 + personalized PageRank) |
-| `graphex-local`  | in-process (`score_nodes(..., backend="local")`)   | lexical + offline semantic embeddings (model2vec), fused by reciprocal rank fusion |
+| `apexgraph-bm25`   | in-process (`score_nodes(..., backend="bm25")`)    | lexical (BM25 + personalized PageRank) |
+| `apexgraph-local`  | in-process (`score_nodes(..., backend="local")`)   | lexical + offline semantic embeddings (model2vec), fused by reciprocal rank fusion |
 | `slurp`          | **black box** via `uvx --from slurp-graph slurp …` | TF-IDF |
 
 slurp is run exactly as a user would install it from PyPI — no source access, no
@@ -54,7 +54,7 @@ its output. Each query is tagged `lexical` or `semantic`:
 
 ```bash
 # from the repo root
-uv pip install model2vec          # Graphex's offline semantic backend
+uv pip install model2vec          # Apexgraph's offline semantic backend
 uv run python bench/compare.py    # also shells out to slurp via uvx
 ```
 
@@ -67,19 +67,19 @@ are printed as two tables and written to `bench/results.json`.
 
 | tool           | scope    | mean recall | mean precision |
 |----------------|----------|------------:|---------------:|
-| `graphex-bm25` | lexical  | 79%         | 63%            |
-| `graphex-bm25` | semantic | 41%         | 13%            |
-| `graphex-bm25` | overall  | 60%         | 38%            |
-| `graphex-local`| lexical  | 83%         | 40%            |
-| `graphex-local`| semantic | 68%         | 23%            |
-| `graphex-local`| overall  | 75%         | 32%            |
+| `apexgraph-bm25` | lexical  | 79%         | 63%            |
+| `apexgraph-bm25` | semantic | 41%         | 13%            |
+| `apexgraph-bm25` | overall  | 60%         | 38%            |
+| `apexgraph-local`| lexical  | 83%         | 40%            |
+| `apexgraph-local`| semantic | 68%         | 23%            |
+| `apexgraph-local`| overall  | 75%         | 32%            |
 | `slurp`        | lexical  | 94%         | 9%             |
 | `slurp`        | semantic | 92%         | 6%             |
 | `slurp`        | overall  | 93%         | 8%             |
 
 ### Reading these honestly
 
-This is **not** a clean "Graphex wins recall everywhere" story, and the harness
+This is **not** a clean "Apexgraph wins recall everywhere" story, and the harness
 does not pretend it is.
 
 1. **slurp posts the highest raw recall (~93%) — but it does so by padding.** At
@@ -90,14 +90,14 @@ does not pretend it is.
    roughly 90% of what slurp hands the LLM is off-topic. Even at the tight 500
    budget it returns 33–40 nodes at ~5–24% precision.
 
-2. **Graphex is 4–10× more precise.** Overall precision is 38% (bm25) / 32%
-   (local) vs slurp's 8%. Graphex spends a few hundred tokens where slurp spends
+2. **Apexgraph is 4–10× more precise.** Overall precision is 38% (bm25) / 32%
+   (local) vs slurp's 8%. Apexgraph spends a few hundred tokens where slurp spends
    the entire budget; on `login authentication` bm25 hits 100% precision in 81
    tokens, while slurp uses 1491 tokens at 7% precision for the same query.
 
-3. **The semantic discriminator holds — within Graphex.** The headline
+3. **The semantic discriminator holds — within Apexgraph.** The headline
    hypothesis (semantic backend recovers what lexical matching can't) is clearly
-   visible by comparing `graphex-bm25` vs `graphex-local`:
+   visible by comparing `apexgraph-bm25` vs `apexgraph-local`:
    - `"sign in flow"`: bm25 = **0% recall** (it shares no tokens with any auth
      node, so BM25 finds nothing and honestly returns an empty subgraph);
      local = **43%**.
@@ -106,23 +106,23 @@ does not pretend it is.
      offline embeddings recover relevant nodes on exactly the no-shared-token
      queries where BM25 collapses to zero.
 
-4. **Where slurp genuinely wins.** On raw recall, slurp beats Graphex on most
+4. **Where slurp genuinely wins.** On raw recall, slurp beats Apexgraph on most
    queries because of the padding above. Concretely at budget 500 (where nobody
    can pad to the full graph), slurp still wins recall on several: `login
    authentication` (slurp 86% vs bm25 43% / local 71%), `data store connection`
    (slurp 100% vs bm25 67% / local 50%), `log out and end session` (slurp 100%
-   vs Graphex 50%). So slurp's TF-IDF, by casting a wide net, does recover more
+   vs Apexgraph 50%). So slurp's TF-IDF, by casting a wide net, does recover more
    relevant nodes per query — at a brutal precision cost. If the only thing you
    care about is recall and tokens are free, slurp's strategy "works".
 
 ### The honest takeaway
 
-- **Comparable-to-better on lexical recall**, where it matters: `graphex-local`
+- **Comparable-to-better on lexical recall**, where it matters: `apexgraph-local`
   (83%) trails slurp (94%) but at 4× the precision.
 - **The semantic backend does what it claims**: on no-shared-token queries it
-  lifts Graphex's recall from 41% → 68% and rescues the queries where BM25
+  lifts Apexgraph's recall from 41% → 68% and rescues the queries where BM25
   returns literally nothing.
-- **Graphex's real edge is precision under budget**: it delivers a tight,
+- **Apexgraph's real edge is precision under budget**: it delivers a tight,
   on-topic subgraph (32–38% precision) instead of slurp's near-whole-graph dump
   (8% precision). For an LLM-context tool where every token competes for
   attention, that is the metric that actually matters.

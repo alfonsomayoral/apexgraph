@@ -1,4 +1,4 @@
-"""Tests for :mod:`graphex.retrieval.ppr`.
+"""Tests for :mod:`apexgraph.retrieval.ppr`.
 
 Small, hand-built :class:`KnowledgeGraph` instances with deterministic numeric
 assertions (with tolerances) covering: probability mass conservation, seed
@@ -8,8 +8,8 @@ clique boosting, dangling handling, global centrality, and empty/single graphs.
 
 from __future__ import annotations
 
-from graphex.models import Edge, Hyperedge, KnowledgeGraph, Node
-from graphex.retrieval.ppr import (
+from apexgraph.models import Edge, Hyperedge, KnowledgeGraph, Node
+from apexgraph.retrieval.ppr import (
     global_pagerank,
     normalize_max,
     personalized_pagerank,

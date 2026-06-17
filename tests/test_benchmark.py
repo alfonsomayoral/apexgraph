@@ -7,13 +7,13 @@ budget must recall strictly less than a generous one.
 
 from __future__ import annotations
 
-from graphex.benchmark import (
+from apexgraph.benchmark import (
     BenchmarkResult,
     BenchmarkRow,
     format_benchmark,
     run_benchmark,
 )
-from graphex.models import Edge, KnowledgeGraph, Node
+from apexgraph.models import Edge, KnowledgeGraph, Node
 
 # A token budget so tight only one or two small nodes fit.
 TINY_BUDGET = 60

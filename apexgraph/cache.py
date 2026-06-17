@@ -2,8 +2,8 @@
 
 Global PageRank and the BM25 inverted index depend only on the graph, not on
 the query — recomputing them on every call (as naive tools do) is wasted work.
-We compute them once, store them under ``.graphex/cache.json``, and invalidate
-by the graph's content :meth:`~graphex.models.KnowledgeGraph.fingerprint`.
+We compute them once, store them under ``.apexgraph/cache.json``, and invalidate
+by the graph's content :meth:`~apexgraph.models.KnowledgeGraph.fingerprint`.
 
 A query then costs only a BM25 lookup over the postings plus one Personalized
 PageRank walk — everything heavy is already on disk.
@@ -15,12 +15,12 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from graphex.budget import DEFAULT_TOKEN_MODEL, base_node_cost
-from graphex.models import KnowledgeGraph
-from graphex.retrieval.bm25 import BM25Index
-from graphex.retrieval.ppr import global_pagerank
+from apexgraph.budget import DEFAULT_TOKEN_MODEL, base_node_cost
+from apexgraph.models import KnowledgeGraph
+from apexgraph.retrieval.bm25 import BM25Index
+from apexgraph.retrieval.ppr import global_pagerank
 
-CACHE_DIRNAME = ".graphex"
+CACHE_DIRNAME = ".apexgraph"
 CACHE_FILENAME = "cache.json"
 # Bump whenever the meaning of a cached artifact changes (e.g. the tokenizer
 # started stemming, which alters the BM25 index) so stale caches are discarded.
@@ -64,7 +64,7 @@ def load_or_build(
 
     Args:
         graph: The graph to score against.
-        base_dir: Directory whose ``.graphex/`` subdir holds the cache. Defaults
+        base_dir: Directory whose ``.apexgraph/`` subdir holds the cache. Defaults
             to the current working directory. ``None`` + ``use_cache=False``
             skips disk entirely.
         use_cache: When False, always rebuild and never read or write disk.

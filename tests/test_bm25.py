@@ -1,12 +1,12 @@
-"""Tests for the BM25 lexical retriever (:mod:`graphex.retrieval.bm25`)."""
+"""Tests for the BM25 lexical retriever (:mod:`apexgraph.retrieval.bm25`)."""
 
 from __future__ import annotations
 
 import math
 
-from graphex.models import KnowledgeGraph, Node
-from graphex.retrieval.base import Retriever
-from graphex.retrieval.bm25 import BM25Index, BM25Retriever, tokenize
+from apexgraph.models import KnowledgeGraph, Node
+from apexgraph.retrieval.base import Retriever
+from apexgraph.retrieval.bm25 import BM25Index, BM25Retriever, tokenize
 
 # -- tokenizer ---------------------------------------------------------------
 

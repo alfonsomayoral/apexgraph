@@ -1,6 +1,6 @@
 """Measure the *honest* value of token-budgeted graph retrieval.
 
-The temptation with a tool like Graphex is to report a single flattering number:
+The temptation with a tool like Apexgraph is to report a single flattering number:
 "we saved 92% of your tokens!" That number is meaningless on its own — a tool
 that returns nothing saves 100% of the tokens and answers 0% of the questions.
 The only number that matters is the trade-off: what fraction of the *relevant*
@@ -24,15 +24,15 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from graphex.budget import (
+from apexgraph.budget import (
     _NODE_OVERHEAD_TOKENS,
     _node_body,
     count_tokens,
     select_subgraph,
 )
-from graphex.cache import CachedArtifacts, load_or_build
-from graphex.models import KnowledgeGraph
-from graphex.scorer import score_nodes
+from apexgraph.cache import CachedArtifacts, load_or_build
+from apexgraph.models import KnowledgeGraph
+from apexgraph.scorer import score_nodes
 
 DEFAULT_BUDGETS: tuple[int, ...] = (2000, 4000, 8000)
 DEFAULT_K_RELEVANT = 10
@@ -106,7 +106,7 @@ def _full_graph_tokens(graph: KnowledgeGraph, model: str) -> int:
     """Token cost of injecting the whole graph — the naive baseline to beat.
 
     Computed with the *same* per-node accounting as the budgeted selection
-    (:func:`graphex.budget._node_body` + per-node overhead), so ``token_savings``
+    (:func:`apexgraph.budget._node_body` + per-node overhead), so ``token_savings``
     is a fair like-for-like comparison rather than a pessimistic one.
     """
     return sum(
@@ -280,7 +280,7 @@ def format_benchmark(result: BenchmarkResult, *, max_query_width: int = 28) -> s
         return "  ".join(parts)
 
     sep = "  ".join("-" * w for w in widths)
-    lines: list[str] = ["Graphex retrieval benchmark", "", _fmt(_HEADERS), sep]
+    lines: list[str] = ["Apexgraph retrieval benchmark", "", _fmt(_HEADERS), sep]
     lines.extend(_fmt(row) for row in cells)
     if not cells:
         lines.append("(no rows)")

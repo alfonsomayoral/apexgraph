@@ -1,7 +1,7 @@
 """Append-only query audit log.
 
 Every retrieval can be recorded as one JSON line in ``<audit_dir>/audit.jsonl``
-(default ``.graphex/audit.jsonl``). The log is *best-effort*: writing it must
+(default ``.apexgraph/audit.jsonl``). The log is *best-effort*: writing it must
 never break a query, so I/O errors are swallowed. Reading is tolerant of partial
 writes — malformed lines are skipped rather than raised on.
 
@@ -17,7 +17,7 @@ from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 
-AUDIT_DIRNAME = ".graphex"
+AUDIT_DIRNAME = ".apexgraph"
 AUDIT_FILENAME = "audit.jsonl"
 
 # Cap on how many top nodes we persist per entry.

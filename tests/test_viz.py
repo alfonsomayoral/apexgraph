@@ -1,4 +1,4 @@
-"""Tests for :mod:`graphex.viz`."""
+"""Tests for :mod:`apexgraph.viz`."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ import binascii
 import json
 from pathlib import Path
 
-from graphex.models import Edge, KnowledgeGraph, Node
-from graphex.viz import _VIS_NETWORK_SRI, build_html, write_html
+from apexgraph.models import Edge, KnowledgeGraph, Node
+from apexgraph.viz import _VIS_NETWORK_SRI, build_html, write_html
 
 
 def test_sri_constant_is_well_formed() -> None:

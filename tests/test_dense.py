@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from graphex.models import KnowledgeGraph, Node
-from graphex.retrieval.base import Retriever
-from graphex.retrieval.dense import DenseRetriever
+from apexgraph.models import KnowledgeGraph, Node
+from apexgraph.retrieval.base import Retriever
+from apexgraph.retrieval.dense import DenseRetriever
 
 
 def _fake_embed(texts: list[str]) -> list[list[float]]:

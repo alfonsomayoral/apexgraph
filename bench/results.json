@@ -6,7 +6,7 @@
   ],
   "rows": [
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "login authentication",
       "type": "lexical",
       "budget": 500,
@@ -18,7 +18,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "login authentication",
       "type": "lexical",
       "budget": 500,
@@ -42,7 +42,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "login authentication",
       "type": "lexical",
       "budget": 1500,
@@ -54,7 +54,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "login authentication",
       "type": "lexical",
       "budget": 1500,
@@ -78,7 +78,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "login authentication",
       "type": "lexical",
       "budget": 4000,
@@ -90,7 +90,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "login authentication",
       "type": "lexical",
       "budget": 4000,
@@ -114,7 +114,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "connection pool",
       "type": "lexical",
       "budget": 500,
@@ -126,7 +126,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "connection pool",
       "type": "lexical",
       "budget": 500,
@@ -150,7 +150,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "connection pool",
       "type": "lexical",
       "budget": 1500,
@@ -162,7 +162,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "connection pool",
       "type": "lexical",
       "budget": 1500,
@@ -186,7 +186,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "connection pool",
       "type": "lexical",
       "budget": 4000,
@@ -198,7 +198,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "connection pool",
       "type": "lexical",
       "budget": 4000,
@@ -222,7 +222,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "session token",
       "type": "lexical",
       "budget": 500,
@@ -234,7 +234,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "session token",
       "type": "lexical",
       "budget": 500,
@@ -258,7 +258,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "session token",
       "type": "lexical",
       "budget": 1500,
@@ -270,7 +270,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "session token",
       "type": "lexical",
       "budget": 1500,
@@ -294,7 +294,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "session token",
       "type": "lexical",
       "budget": 4000,
@@ -306,7 +306,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "session token",
       "type": "lexical",
       "budget": 4000,
@@ -330,7 +330,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "create task insert",
       "type": "lexical",
       "budget": 500,
@@ -342,7 +342,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "create task insert",
       "type": "lexical",
       "budget": 500,
@@ -366,7 +366,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "create task insert",
       "type": "lexical",
       "budget": 1500,
@@ -378,7 +378,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "create task insert",
       "type": "lexical",
       "budget": 1500,
@@ -402,7 +402,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "create task insert",
       "type": "lexical",
       "budget": 4000,
@@ -414,7 +414,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "create task insert",
       "type": "lexical",
       "budget": 4000,
@@ -438,7 +438,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "password hashing",
       "type": "lexical",
       "budget": 500,
@@ -450,7 +450,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "password hashing",
       "type": "lexical",
       "budget": 500,
@@ -474,7 +474,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "password hashing",
       "type": "lexical",
       "budget": 1500,
@@ -486,7 +486,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "password hashing",
       "type": "lexical",
       "budget": 1500,
@@ -510,7 +510,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "password hashing",
       "type": "lexical",
       "budget": 4000,
@@ -522,7 +522,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "password hashing",
       "type": "lexical",
       "budget": 4000,
@@ -546,7 +546,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "sign in flow",
       "type": "semantic",
       "budget": 500,
@@ -558,7 +558,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "sign in flow",
       "type": "semantic",
       "budget": 500,
@@ -582,7 +582,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "sign in flow",
       "type": "semantic",
       "budget": 1500,
@@ -594,7 +594,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "sign in flow",
       "type": "semantic",
       "budget": 1500,
@@ -618,7 +618,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "sign in flow",
       "type": "semantic",
       "budget": 4000,
@@ -630,7 +630,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "sign in flow",
       "type": "semantic",
       "budget": 4000,
@@ -654,7 +654,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "authorization gate",
       "type": "semantic",
       "budget": 500,
@@ -666,7 +666,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "authorization gate",
       "type": "semantic",
       "budget": 500,
@@ -690,7 +690,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "authorization gate",
       "type": "semantic",
       "budget": 1500,
@@ -702,7 +702,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "authorization gate",
       "type": "semantic",
       "budget": 1500,
@@ -726,7 +726,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "authorization gate",
       "type": "semantic",
       "budget": 4000,
@@ -738,7 +738,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "authorization gate",
       "type": "semantic",
       "budget": 4000,
@@ -762,7 +762,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "data store connection",
       "type": "semantic",
       "budget": 500,
@@ -774,7 +774,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "data store connection",
       "type": "semantic",
       "budget": 500,
@@ -798,7 +798,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "data store connection",
       "type": "semantic",
       "budget": 1500,
@@ -810,7 +810,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "data store connection",
       "type": "semantic",
       "budget": 1500,
@@ -834,7 +834,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "data store connection",
       "type": "semantic",
       "budget": 4000,
@@ -846,7 +846,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "data store connection",
       "type": "semantic",
       "budget": 4000,
@@ -870,7 +870,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "user sign-up account",
       "type": "semantic",
       "budget": 500,
@@ -882,7 +882,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "user sign-up account",
       "type": "semantic",
       "budget": 500,
@@ -906,7 +906,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "user sign-up account",
       "type": "semantic",
       "budget": 1500,
@@ -918,7 +918,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "user sign-up account",
       "type": "semantic",
       "budget": 1500,
@@ -942,7 +942,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "user sign-up account",
       "type": "semantic",
       "budget": 4000,
@@ -954,7 +954,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "user sign-up account",
       "type": "semantic",
       "budget": 4000,
@@ -978,7 +978,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "log out and end session",
       "type": "semantic",
       "budget": 500,
@@ -990,7 +990,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "log out and end session",
       "type": "semantic",
       "budget": 500,
@@ -1014,7 +1014,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "log out and end session",
       "type": "semantic",
       "budget": 1500,
@@ -1026,7 +1026,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "log out and end session",
       "type": "semantic",
       "budget": 1500,
@@ -1050,7 +1050,7 @@
       "available": true
     },
     {
-      "tool": "graphex-bm25",
+      "tool": "apexgraph-bm25",
       "query": "log out and end session",
       "type": "semantic",
       "budget": 4000,
@@ -1062,7 +1062,7 @@
       "available": true
     },
     {
-      "tool": "graphex-local",
+      "tool": "apexgraph-local",
       "query": "log out and end session",
       "type": "semantic",
       "budget": 4000,
@@ -1087,7 +1087,7 @@
     }
   ],
   "aggregate": {
-    "graphex-bm25": {
+    "apexgraph-bm25": {
       "lexical": {
         "mean_recall": 0.7857,
         "mean_precision": 0.6317,
@@ -1104,7 +1104,7 @@
         "n": 30
       }
     },
-    "graphex-local": {
+    "apexgraph-local": {
       "lexical": {
         "mean_recall": 0.8274,
         "mean_precision": 0.4,

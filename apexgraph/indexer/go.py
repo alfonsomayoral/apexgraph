@@ -12,7 +12,7 @@ Recovers, line by line:
   ``imports_from`` edge.
 
 A module node is always emitted first. IDs and node/edge shapes follow the
-shared graphify convention from :mod:`graphex.indexer.python`.
+shared graphify convention from :mod:`apexgraph.indexer.python`.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from graphex.indexer.python import (
+from apexgraph.indexer.python import (
     make_edge,
     make_node,
     module_id_for,

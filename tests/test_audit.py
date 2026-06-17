@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from graphex.audit import (
+from apexgraph.audit import (
     AUDIT_FILENAME,
     log_query,
     read_audit,
@@ -43,7 +43,7 @@ def test_log_then_read_round_trips_fields(tmp_path: Path):
 
 
 def test_log_appends_and_creates_dir(tmp_path: Path):
-    audit_dir = tmp_path / "nested" / ".graphex"
+    audit_dir = tmp_path / "nested" / ".apexgraph"
     log_query("q1", Path("g.json"), _stats(), ["a"], audit_dir=audit_dir)
     log_query("q2", Path("g.json"), _stats(), ["b"], audit_dir=audit_dir)
     assert (audit_dir / AUDIT_FILENAME).exists()

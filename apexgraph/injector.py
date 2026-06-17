@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from graphex.models import KnowledgeGraph
+from apexgraph.models import KnowledgeGraph
 
 # Extensions handled by brace-balanced extraction; everything else (notably .py)
 # uses indentation-based extraction.

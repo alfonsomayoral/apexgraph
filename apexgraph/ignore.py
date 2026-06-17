@@ -1,8 +1,8 @@
-"""Node exclusion via a ``.graphexignore`` file (gitignore syntax).
+"""Node exclusion via a ``.apexgraphignore`` file (gitignore syntax).
 
 Graphs produced by graphify often carry nodes you never want surfaced — vendored
 code, generated files, scratch notes. Rather than hard-coding skip rules, this
-module lets a project drop a ``.graphexignore`` file using the exact same syntax
+module lets a project drop a ``.apexgraphignore`` file using the exact same syntax
 as ``.gitignore`` (blank lines and ``#`` comments ignored, ``!`` negation, glob
 wildcards, directory anchors).
 
@@ -19,10 +19,10 @@ from typing import Any
 
 import pathspec
 
-from graphex.models import KnowledgeGraph
+from apexgraph.models import KnowledgeGraph
 
 
-class GraphexIgnore:
+class ApexgraphIgnore:
     """A compiled set of ignore patterns matched against nodes.
 
     Wraps a :class:`pathspec.PathSpec` (``gitignore``). A node is ignored when
@@ -33,8 +33,8 @@ class GraphexIgnore:
         self.spec = spec
 
     @classmethod
-    def from_lines(cls, lines: list[str]) -> GraphexIgnore:
-        """Compile a :class:`GraphexIgnore` from raw pattern lines.
+    def from_lines(cls, lines: list[str]) -> ApexgraphIgnore:
+        """Compile a :class:`ApexgraphIgnore` from raw pattern lines.
 
         ``pathspec`` itself skips blank lines and ``#`` comments, so the caller
         may pass the file's lines verbatim.
@@ -56,8 +56,8 @@ class GraphexIgnore:
         return bool(source_file and self.spec.match_file(str(source_file)))
 
 
-def load_ignore(path: Path) -> GraphexIgnore | None:
-    """Load a :class:`GraphexIgnore` from ``path`` if it exists.
+def load_ignore(path: Path) -> ApexgraphIgnore | None:
+    """Load a :class:`ApexgraphIgnore` from ``path`` if it exists.
 
     Returns ``None`` when the file is absent — a ``None`` ignore means "ignore
     nothing". Blank lines and ``#`` comments are handled by ``pathspec``.
@@ -66,15 +66,15 @@ def load_ignore(path: Path) -> GraphexIgnore | None:
     if not path.exists():
         return None
     lines = path.read_text(encoding="utf-8").splitlines()
-    return GraphexIgnore.from_lines(lines)
+    return ApexgraphIgnore.from_lines(lines)
 
 
-def apply_ignore(graph: KnowledgeGraph, ignore: GraphexIgnore | None) -> KnowledgeGraph:
+def apply_ignore(graph: KnowledgeGraph, ignore: ApexgraphIgnore | None) -> KnowledgeGraph:
     """Return a graph with ignored nodes removed.
 
     If ``ignore`` is ``None`` the input graph is returned unchanged. Otherwise a
     new induced subgraph is returned containing only the nodes for which
-    :meth:`GraphexIgnore.should_ignore` is ``False`` (carrying over the induced
+    :meth:`ApexgraphIgnore.should_ignore` is ``False`` (carrying over the induced
     edges and side metadata via :meth:`KnowledgeGraph.induced_subgraph`).
     """
     if ignore is None:

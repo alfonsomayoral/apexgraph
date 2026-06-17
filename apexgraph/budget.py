@@ -2,7 +2,7 @@
 
 Picking the highest-value set of nodes under a token ceiling is a 0/1 knapsack.
 Greedy-by-score (what simpler tools do) ignores cost — a 0.9 node worth 400
-tokens is a worse buy than two 0.6 nodes worth 80 each. Graphex selects by
+tokens is a worse buy than two 0.6 nodes worth 80 each. Apexgraph selects by
 *marginal value per token* and shapes the result with two extra terms:
 
     gain(n | S) = relevance(n)
@@ -24,9 +24,9 @@ from pathlib import Path
 import networkx as nx
 import tiktoken
 
-from graphex.injector import extract_code_block, safe_source_path
-from graphex.models import KnowledgeGraph
-from graphex.retrieval.base import normalize
+from apexgraph.injector import extract_code_block, safe_source_path
+from apexgraph.models import KnowledgeGraph
+from apexgraph.retrieval.base import normalize
 
 # Flat per-node allowance for the markdown heading, file line, score, and a
 # relationship line — keeps cost a slight over-estimate so output never overflows.
@@ -186,7 +186,7 @@ def select_subgraph(
 
     Args:
         graph: Source knowledge graph.
-        scores: ``{node_id: relevance}`` from :func:`graphex.scorer.score_nodes`.
+        scores: ``{node_id: relevance}`` from :func:`apexgraph.scorer.score_nodes`.
         budget: Maximum total tokens for the rendered subgraph.
         model: tiktoken encoding for counting.
         min_score: Drop candidates scoring below this before selecting.

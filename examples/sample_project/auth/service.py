@@ -17,7 +17,7 @@ from db.models import User
 from db.pool import ConnectionPool, find_user_by_email
 
 
-def hash_password(password: str, *, salt: str = "graphex-demo") -> str:
+def hash_password(password: str, *, salt: str = "apexgraph-demo") -> str:
     """Hash a plaintext password with a salted SHA-256 (demo-grade only)."""
     digest = hashlib.sha256()
     digest.update(salt.encode("utf-8"))

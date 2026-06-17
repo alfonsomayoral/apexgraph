@@ -20,7 +20,7 @@ from __future__ import annotations
 from collections import deque
 from dataclasses import dataclass, field
 
-from graphex.models import KnowledgeGraph
+from apexgraph.models import KnowledgeGraph
 
 # Node attributes whose change marks a node as "modified". An identity-level set:
 # a different label/type/description/location means the entity meaningfully moved,

@@ -13,7 +13,7 @@ Transition structure
 The walk runs over a *combined* weighted adjacency built from two sources:
 
 - the directed edges of ``kg.digraph``, each contributing an effective weight of
-  ``max(0, weight) * max(0, confidence_score)`` (see :attr:`graphex.models.Edge`),
+  ``max(0, weight) * max(0, confidence_score)`` (see :attr:`apexgraph.models.Edge`),
 - the exploded clique pairs returned by :meth:`KnowledgeGraph.clique_edges`, so
   hyperedge co-participation propagates relevance even without a pairwise edge.
 
@@ -26,7 +26,7 @@ power-iteration step.
 
 from __future__ import annotations
 
-from graphex.models import KnowledgeGraph
+from apexgraph.models import KnowledgeGraph
 
 __all__ = [
     "personalized_pagerank",

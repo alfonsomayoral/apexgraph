@@ -1,7 +1,7 @@
 """BM25 lexical retriever over node text, backed by a cached inverted index.
 
 This is the *lexical* leg of retrieval: it scores nodes by Okapi BM25 over the
-tokenised :meth:`~graphex.models.KnowledgeGraph.node_text` of every node. It is
+tokenised :meth:`~apexgraph.models.KnowledgeGraph.node_text` of every node. It is
 deliberately cheap to build and trivially serialisable so the index can live in
 the on-disk cache alongside the graph fingerprint.
 
@@ -20,8 +20,8 @@ from typing import Any
 
 import snowballstemmer
 
-from graphex.models import KnowledgeGraph
-from graphex.retrieval.base import normalize
+from apexgraph.models import KnowledgeGraph
+from apexgraph.retrieval.base import normalize
 
 # Default Okapi BM25 hyper-parameters.
 _K1: float = 1.5
@@ -240,7 +240,7 @@ class BM25Index:
 
 
 class BM25Retriever:
-    """A :class:`~graphex.retrieval.base.Retriever` backed by :class:`BM25Index`.
+    """A :class:`~apexgraph.retrieval.base.Retriever` backed by :class:`BM25Index`.
 
     Builds a fresh index per call and returns length-normalised scores. Use
     :class:`BM25Index` directly when you want to reuse a cached index across

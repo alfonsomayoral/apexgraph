@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from graphex.models import KnowledgeGraph, Node
-from graphex.retrieval.fusion import (
+from apexgraph.models import KnowledgeGraph, Node
+from apexgraph.retrieval.fusion import (
     fuse,
     importance_prior,
     reciprocal_rank_fusion,

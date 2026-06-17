@@ -3,11 +3,11 @@
 Off the hot path by design: the default pipeline is fully local. When real
 embeddings help — cross-vocabulary queries, natural-language questions that
 don't share tokens with the labels — this backend scores nodes by cosine
-similarity to the query embedding, and :mod:`graphex.retrieval.fusion` can blend
+similarity to the query embedding, and :mod:`apexgraph.retrieval.fusion` can blend
 its ranking with BM25 via Reciprocal Rank Fusion.
 
 Backends: ``openai`` (``text-embedding-3-small``) and ``voyage`` (Voyage AI's
-``voyage-3``). Requires ``pip install 'graphex[dense]'`` and the relevant
+``voyage-3``). Requires ``pip install 'apexgraph[dense]'`` and the relevant
 provider API key.
 """
 
@@ -15,8 +15,8 @@ from __future__ import annotations
 
 import math
 
-from graphex.models import KnowledgeGraph
-from graphex.retrieval.base import normalize
+from apexgraph.models import KnowledgeGraph
+from apexgraph.retrieval.base import normalize
 
 _OPENAI_MODEL = "text-embedding-3-small"
 _VOYAGE_MODEL = "voyage-3"
@@ -35,7 +35,7 @@ def _embed_openai(texts: list[str]) -> list[list[float]]:
     try:
         import openai
     except ImportError as exc:  # pragma: no cover - exercised only without the extra
-        raise ImportError("The openai backend requires: pip install 'graphex[dense]'") from exc
+        raise ImportError("The openai backend requires: pip install 'apexgraph[dense]'") from exc
     client = openai.OpenAI()
     resp = client.embeddings.create(model=_OPENAI_MODEL, input=texts)
     return [item.embedding for item in resp.data]
@@ -45,7 +45,7 @@ def _embed_voyage(texts: list[str]) -> list[list[float]]:
     try:
         import voyageai
     except ImportError as exc:  # pragma: no cover - exercised only without the extra
-        raise ImportError("The voyage backend requires: pip install 'graphex[dense]'") from exc
+        raise ImportError("The voyage backend requires: pip install 'apexgraph[dense]'") from exc
     client = voyageai.Client()
     result = client.embed(texts, model=_VOYAGE_MODEL, input_type="document")
     return result.embeddings

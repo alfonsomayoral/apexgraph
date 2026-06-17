@@ -1,6 +1,6 @@
-# Graphex examples
+# Apexgraph examples
 
-A small, self-contained walkthrough of Graphex on a realistic sample codebase.
+A small, self-contained walkthrough of Apexgraph on a realistic sample codebase.
 
 - [`sample_project/`](sample_project/) — a tiny task-tracker web app (auth + db +
   api layers, ~10 Python files) whose modules import and call into each other.
@@ -8,7 +8,7 @@ A small, self-contained walkthrough of Graphex on a realistic sample codebase.
   statically indexing `sample_project/`. It is committed so you can run every
   query below without re-indexing.
 
-All commands are run from the repository root with `uv run graphex ...`. The
+All commands are run from the repository root with `uv run apexgraph ...`. The
 output shown is real output captured from this graph (numbers may shift slightly
 if you re-index after editing the sample).
 
@@ -34,8 +34,8 @@ imports from `auth.session` and `db`. That gives the indexer real
 ## 1. Index the project
 
 ```console
-$ uv run graphex index examples/sample_project -o examples/sample_graph.json
-Indexing C:\Users\amayo\graphex\examples\sample_project ...
+$ uv run apexgraph index examples/sample_project -o examples/sample_graph.json
+Indexing C:\Users\amayo\apexgraph\examples\sample_project ...
   102 nodes · 94 edges · 10 files
   Saved: examples\sample_graph.json
 ```
@@ -46,13 +46,13 @@ with `contains` and `imports_from` edges.
 
 ## 2. Run a query
 
-Ask a natural-language question and Graphex selects the most relevant subgraph
+Ask a natural-language question and Apexgraph selects the most relevant subgraph
 that fits the token budget (`-b`/`--budget`):
 
 ```console
-$ uv run graphex "how does login authentication work" -g examples/sample_graph.json -b 1500 --no-cache --no-audit
+$ uv run apexgraph "how does login authentication work" -g examples/sample_graph.json -b 1500 --no-cache --no-audit
 ┌──────────────────────────────────────────────────────────┐
-│ Graphex subgraph for: how does login authentication work │
+│ Apexgraph subgraph for: how does login authentication work │
 │ Selected 3/102 nodes · 81/1500 tokens (2.9%)             │
 └──────────────────────────────────────────────────────────┘
 
@@ -89,9 +89,9 @@ exactly the slice you'd want to paste into an agent's context.
 A second query, this time about sessions, pulls in the whole session subsystem:
 
 ```console
-$ uv run graphex "session token validation and expiry" -g examples/sample_graph.json -b 1500 --no-cache --no-audit
+$ uv run apexgraph "session token validation and expiry" -g examples/sample_graph.json -b 1500 --no-cache --no-audit
 ┌───────────────────────────────────────────────────────────┐
-│ Graphex subgraph for: session token validation and expiry │
+│ Apexgraph subgraph for: session token validation and expiry │
 │ Selected 11/102 nodes · 330/1500 tokens (10.8%)           │
 └───────────────────────────────────────────────────────────┘
 ...
@@ -109,7 +109,7 @@ $ uv run graphex "session token validation and expiry" -g examples/sample_graph.
 ## 3. Graph statistics
 
 ```console
-$ uv run graphex stats -g examples/sample_graph.json
+$ uv run apexgraph stats -g examples/sample_graph.json
        Graph:
 examples\sample_graph
         .json
@@ -132,7 +132,7 @@ they read as zero here.)
 what references it:
 
 ```console
-$ uv run graphex explain auth_service_authservice -g examples/sample_graph.json
+$ uv run apexgraph explain auth_service_authservice -g examples/sample_graph.json
 # AuthService  (class)
 Class AuthService
 → auth/service.py L43
@@ -155,7 +155,7 @@ traces the containment chain from the `auth/service.py` module down to the
 `login` method, through the `AuthService` class:
 
 ```console
-$ uv run graphex path auth_service auth_service_login -g examples/sample_graph.json
+$ uv run apexgraph path auth_service auth_service_login -g examples/sample_graph.json
 service.py → AuthService → login
 ```
 

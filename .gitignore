@@ -22,7 +22,8 @@ env/
 .coverage
 htmlcov/
 
-# Graphex sidecar cache + runtime artifacts
+# Apexgraph sidecar cache + runtime artifacts
+.apexgraph/
 .graphex/
 graphify-out/
 
@@ -39,5 +40,5 @@ Thumbs.db
 bench/compare_graphify.py
 bench/_clean_eval.py
 bench/results_graphify.json
-bench/_graphify_vs_graphex.py
+bench/_graphify_vs_apexgraph.py
 bench/_supabase_eval.py

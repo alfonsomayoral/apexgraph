@@ -1,23 +1,23 @@
 <div align="center">
 
-# ◢◤ Graphex
+# ◢◤ Apexgraph
 
 ### Apex-relevance subgraph retrieval for AI agents
 
 **Stop dumping your whole knowledge graph into the prompt.**
-Graphex hands your LLM the *peak* of the graph — the smallest, most relevant
+Apexgraph hands your LLM the *peak* of the graph — the smallest, most relevant
 subgraph that answers the query — sized to an exact token budget.
 
 [![PyPI](https://img.shields.io/pypi/v/apexgraph?color=2b8a3e&label=apexgraph)](https://pypi.org/project/apexgraph/)
-[![CI](https://github.com/alfonsomayoral/graphex/actions/workflows/ci.yml/badge.svg)](https://github.com/alfonsomayoral/graphex/actions/workflows/ci.yml)
+[![CI](https://github.com/alfonsomayoral/apexgraph/actions/workflows/ci.yml/badge.svg)](https://github.com/alfonsomayoral/apexgraph/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue)
 ![Tests](https://img.shields.io/badge/tests-229%20passing-2b8a3e)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 ```bash
 uv tool install "apexgraph[local]"
-graphex index .                       # build a code graph (no LLM)
-graphex "how does auth work" -b 4000  # retrieve the apex subgraph
+apexgraph index .                       # build a code graph (no LLM)
+apexgraph "how does auth work" -b 4000  # retrieve the apex subgraph
 ```
 
 </div>
@@ -38,15 +38,15 @@ agent needs context about *one* corner of it, the usual options are both bad:
 You want the *opposite*: a tight, on-topic, **connected** slice of the graph that
 fits the budget you have — and you want it in milliseconds, offline, every query.
 
-## ✨ What Graphex does
+## ✨ What Apexgraph does
 
-Graphex scores every node against your query, then selects the highest-value
+Apexgraph scores every node against your query, then selects the highest-value
 subgraph that fits a token ceiling. One command, one principled relevance number
 per node, a budget that's never exceeded.
 
 ```mermaid
 flowchart TB
-    SRC["📁 your source code"] -->|"graphex index"| KG
+    SRC["📁 your source code"] -->|"apexgraph index"| KG
     GFY["🕸️ graphify graph.json"] -->|"load · native"| KG
     KG[("Knowledge Graph<br/>weighted edges · confidence<br/>hyperedges · communities · god nodes")]
 
@@ -82,11 +82,8 @@ flowchart TB
 
 It reads graphify's graphs **natively** and uses the rich signals graphify emits
 — edge weights, confidence, hyperedges, communities, god nodes — that simpler
-tools throw away. Or skip graphify entirely: `graphex index` builds a clean,
+tools throw away. Or skip graphify entirely: `apexgraph index` builds a clean,
 code-only graph from your source in ~1.5s.
-
-> **One name note:** the PyPI package is `apexgraph`; the command and import are
-> both `graphex`.
 
 ## 🧩 Capabilities
 
@@ -97,7 +94,7 @@ code-only graph from your source in ~1.5s.
 | 📐 **Budget solved as a knapsack** | Selection maximises value *per token* with an MMR diversity penalty and a connectivity bonus — a tight, non-redundant slice, not a bag of islands. Exact DP mode for the value ceiling. |
 | 💯 **Honest token accounting** | A node's cost is its *final rendered form*, including injected source code — so `tokens_used` never lies and the output never overflows the budget. |
 | ⚡ **Fast & cached** | Query-independent work (global PageRank, the BM25 index, token costs) is precomputed once and cached, invalidated by content hash. A query is a lookup plus one walk — ~0.1s on a 9k-node graph. |
-| 🔌 **MCP server** | Stdlib JSON-RPC over stdio (no SDK). Exposes `graphex_query`, `graphex_explain`, `graphex_path`, `graphex_stats` to Claude Code and any MCP agent. |
+| 🔌 **MCP server** | Stdlib JSON-RPC over stdio (no SDK). Exposes `apexgraph_query`, `apexgraph_explain`, `apexgraph_path`, `apexgraph_stats` to Claude Code and any MCP agent. |
 | 🏗️ **Built-in indexer** | Python (`ast`), TypeScript/JS (tree-sitter → regex), Go (regex). `--strict-ids` for collision-free ids; incremental re-index by file hash. |
 | 🧷 **Connected output** | `--connected` stitches the result toward a single connected subgraph (approximate Steiner) within budget. |
 | 🔒 **Safe by default** | Code injection is contained to the project root (no path-traversal exfiltration); the HTML viz pins its CDN script with Subresource Integrity. |
@@ -118,22 +115,22 @@ the two scales need no calibration). A query like *"sign in flow"* then seeds th
 walk from the login code even though they share no tokens.
 
 **Selection is a budgeted 0/1 knapsack, solved as one.** Picking the best set of
-nodes under a token ceiling is exactly the knapsack problem. Graphex selects by
+nodes under a token ceiling is exactly the knapsack problem. Apexgraph selects by
 *marginal value per token* and shapes the result with two terms — an MMR penalty
 so it doesn't say the same thing twice, and a connectivity bonus so the subgraph
 holds together. The single most relevant node is guaranteed to survive.
 
-## 📊 Results — Graphex vs graphify
+## 📊 Results — Apexgraph vs graphify
 
-**Two real codebases, two very different graph shapes, the same outcome: Graphex
+**Two real codebases, two very different graph shapes, the same outcome: Apexgraph
 returns ~2× more on-topic code, in a third of the nodes, an order of magnitude
 faster.** Each is averaged over 10 feature queries at a 2,000-token budget —
-graphify answers with its native graph + BFS query; Graphex builds its own
+graphify answers with its native graph + BFS query; Apexgraph builds its own
 code-only index and retrieves.
 
 <div align="center">
 
-| metric | codebase | graphify | **graphex** |
+| metric | codebase | graphify | **apexgraph** |
 |---|---|:---:|:---:|
 | 🎯 **on-topic precision** | Repo A · clean backend | 31% | **59%** `bm25` |
 | 🎯 **on-topic precision** | Repo B · localized app | 3% | **47%** `local` |
@@ -146,7 +143,7 @@ Repo B: ~9k-node graph, ~58% localization strings.*
 
 </div>
 
-Graphex is **~2× more precise on the clean backend** (pure retrieval quality, no
+Apexgraph is **~2× more precise on the clean backend** (pure retrieval quality, no
 noise to hide behind) and **~16× more precise on the localization-heavy app** —
 its own indexer keeps only code, and its scoring ranks the *actual* feature code
 to the top instead of walking into translation strings:
@@ -154,7 +151,7 @@ to the top instead of walking into translation strings:
 ```text
 query for a feature
   graphify → leads with localization files and unrelated config
-  graphex  → the actual components, functions and stores for that feature
+  apexgraph  → the actual components, functions and stores for that feature
 ```
 
 And it builds those graphs itself, fast: **~500 code nodes in under a second**, or
@@ -183,39 +180,39 @@ uv tool install "apexgraph[dense]"     # + cloud embeddings (OpenAI / Voyage AI)
 # or: pipx install apexgraph
 ```
 
-Requires Python 3.12+. The command is `graphex`.
+Requires Python 3.12+. The command is `apexgraph`.
 
 ### 1 · Get a graph
 
-Either point Graphex at a graph `graphify` already built, **or** build one from
+Either point Apexgraph at a graph `graphify` already built, **or** build one from
 source with no LLM:
 
 ```bash
-graphex index ./src                    # → ./src/graphify-out/graph.json
-graphex index ./src --strict-ids       # collision-free node ids
-graphex index ./src --incremental      # re-index only changed files
-graphex stats                          # nodes / edges / communities / god nodes
+apexgraph index ./src                    # → ./src/graphify-out/graph.json
+apexgraph index ./src --strict-ids       # collision-free node ids
+apexgraph index ./src --incremental      # re-index only changed files
+apexgraph stats                          # nodes / edges / communities / god nodes
 ```
 
 ### 2 · Query it
 
-`graphex QUERY` is the default — any unrecognised first argument is treated as a
+`apexgraph QUERY` is the default — any unrecognised first argument is treated as a
 query. The graph is auto-discovered (or pass `-g PATH`).
 
 ```bash
-graphex "how does session validation work" -b 2000
-graphex "authorization gate" --backend local      # offline semantic recall
-graphex "auth flow" --explain                      # per-node score breakdown
-graphex "auth flow" --inject-code                  # include real function bodies
-graphex "auth flow" --connected                    # stitch toward a connected slice
-graphex "auth flow" --viz                          # interactive force-directed HTML
+apexgraph "how does session validation work" -b 2000
+apexgraph "authorization gate" --backend local      # offline semantic recall
+apexgraph "auth flow" --explain                      # per-node score breakdown
+apexgraph "auth flow" --inject-code                  # include real function bodies
+apexgraph "auth flow" --connected                    # stitch toward a connected slice
+apexgraph "auth flow" --viz                          # interactive force-directed HTML
 ```
 
 A query renders a budgeted subgraph with a header that never lies about its size:
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐
-│ Graphex subgraph for: how does session validation work       │
+│ Apexgraph subgraph for: how does session validation work       │
 │ Selected 8/9314 nodes (0.1%) · 1487/2000 tokens              │
 └──────────────────────────────────────────────────────────────┘
 ## Relevant Nodes
@@ -224,7 +221,7 @@ A query renders a budgeted subgraph with a header that never lies about its size
 ```
 
 <details>
-<summary><b>Key flags for <code>graphex query</code></b></summary>
+<summary><b>Key flags for <code>apexgraph query</code></b></summary>
 
 | flag | default | meaning |
 |------|---------|---------|
@@ -243,31 +240,31 @@ A query renders a budgeted subgraph with a header that never lies about its size
 ### 3 · Inspect & export
 
 ```bash
-graphex explain <node_id>                  # a node + its neighbourhood
-graphex path <a> <b>                        # shortest path between two nodes
-graphex diff old.json new.json -b 2000      # change-impact subgraph
-graphex export "auth flow" -f claudemd -o CONTEXT.md   # paste-ready context block
-graphex benchmark -q "auth flow" -b 2000    # recall@budget + token savings
+apexgraph explain <node_id>                  # a node + its neighbourhood
+apexgraph path <a> <b>                        # shortest path between two nodes
+apexgraph diff old.json new.json -b 2000      # change-impact subgraph
+apexgraph export "auth flow" -f claudemd -o CONTEXT.md   # paste-ready context block
+apexgraph benchmark -q "auth flow" -b 2000    # recall@budget + token savings
 ```
 
 ### 4 · Serve it to an agent (MCP)
 
-Graphex speaks the Model Context Protocol over stdio:
+Apexgraph speaks the Model Context Protocol over stdio:
 
 ```bash
-graphex serve --graph graph.json
+apexgraph serve --graph graph.json
 # register with Claude Code:
-claude mcp add graphex -- graphex serve --graph /abs/path/to/graph.json
+claude mcp add apexgraph -- apexgraph serve --graph /abs/path/to/graph.json
 ```
 
-Tools exposed: `graphex_query`, `graphex_explain`, `graphex_path`, `graphex_stats`.
+Tools exposed: `apexgraph_query`, `apexgraph_explain`, `apexgraph_path`, `apexgraph_stats`.
 
 ---
 
 ## 🛠️ Development
 
 ```bash
-git clone https://github.com/alfonsomayoral/graphex && cd graphex
+git clone https://github.com/alfonsomayoral/apexgraph && cd apexgraph
 uv sync
 uv run pytest          # 229 tests
 uv run ruff check .    # lint

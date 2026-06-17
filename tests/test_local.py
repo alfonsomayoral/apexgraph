@@ -5,9 +5,9 @@ No network, no model download — every test plugs a toy embedder via ``embed_fn
 
 from __future__ import annotations
 
-from graphex.models import KnowledgeGraph, Node
-from graphex.retrieval.base import Retriever
-from graphex.retrieval.local import LocalEmbeddingRetriever
+from apexgraph.models import KnowledgeGraph, Node
+from apexgraph.retrieval.base import Retriever
+from apexgraph.retrieval.local import LocalEmbeddingRetriever
 
 
 def _fake_embed(texts: list[str]) -> list[list[float]]:

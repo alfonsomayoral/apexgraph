@@ -1,10 +1,10 @@
-# Releasing Graphex to PyPI
+# Releasing Apexgraph to PyPI
 
-Graphex publishes via **Trusted Publishing** (OIDC) from GitHub Actions — no API
+Apexgraph publishes via **Trusted Publishing** (OIDC) from GitHub Actions — no API
 token is ever stored. The release workflow lives in
 [`.github/workflows/publish.yml`](.github/workflows/publish.yml) and runs when a
 GitHub Release is published. The PyPI distribution name is **`apexgraph`** (the
-command and import name remain `graphex`).
+command and import name remain `apexgraph`).
 
 ## One-time setup (per maintainer)
 
@@ -14,7 +14,7 @@ command and import name remain `graphex`).
    <https://pypi.org/manage/account/publishing/> with:
    - PyPI Project Name: `apexgraph`
    - Owner: `alfonsomayoral`
-   - Repository name: `graphex`
+   - Repository name: `apexgraph`
    - Workflow name: `publish.yml`
    - Environment name: `pypi`
 
@@ -50,7 +50,7 @@ gh run watch
 
 ```bash
 uv tool install apexgraph
-graphex --version
+apexgraph --version
 ```
 
 A version, once published, cannot be replaced — only yanked. Validate locally

@@ -1,4 +1,4 @@
-"""Tests for :mod:`graphex.loader` across JSON, GraphML and Neo4j CSV formats."""
+"""Tests for :mod:`apexgraph.loader` across JSON, GraphML and Neo4j CSV formats."""
 
 from __future__ import annotations
 
@@ -7,14 +7,14 @@ from pathlib import Path
 
 import pytest
 
-from graphex.loader import (
-    GraphexLoadError,
+from apexgraph.loader import (
+    ApexgraphLoadError,
     convert_graph,
     detect_format,
     load_graph,
     load_graph_neo4j,
 )
-from graphex.models import KnowledgeGraph
+from apexgraph.models import KnowledgeGraph
 
 # ---------------------------------------------------------------------------
 # Fixtures / builders
@@ -164,39 +164,39 @@ def test_generic_json_with_edges(tmp_path: Path) -> None:
 
 def test_missing_node_id_raises(tmp_path: Path) -> None:
     path = _write_json(tmp_path, {"nodes": [{"label": "no id"}]}, name="bad.json")
-    with pytest.raises(GraphexLoadError, match="id"):
+    with pytest.raises(ApexgraphLoadError, match="id"):
         load_graph(path)
 
 
 def test_empty_nodes_raises(tmp_path: Path) -> None:
     path = _write_json(tmp_path, {"nodes": []}, name="empty.json")
-    with pytest.raises(GraphexLoadError, match="no nodes"):
+    with pytest.raises(ApexgraphLoadError, match="no nodes"):
         load_graph(path)
 
 
 def test_invalid_json_raises(tmp_path: Path) -> None:
     path = tmp_path / "broken.json"
     path.write_text("{not valid json", encoding="utf-8")
-    with pytest.raises(GraphexLoadError, match="invalid JSON"):
+    with pytest.raises(ApexgraphLoadError, match="invalid JSON"):
         load_graph(path)
 
 
 def test_non_object_toplevel_raises(tmp_path: Path) -> None:
     path = tmp_path / "list.json"
     path.write_text("[1, 2, 3]", encoding="utf-8")
-    with pytest.raises(GraphexLoadError, match="object"):
+    with pytest.raises(ApexgraphLoadError, match="object"):
         load_graph(path)
 
 
 def test_file_not_found_raises(tmp_path: Path) -> None:
-    with pytest.raises(GraphexLoadError, match="not found"):
+    with pytest.raises(ApexgraphLoadError, match="not found"):
         load_graph(tmp_path / "missing.json")
 
 
 def test_unsupported_extension_raises(tmp_path: Path) -> None:
     path = tmp_path / "thing.txt"
     path.write_text("hi", encoding="utf-8")
-    with pytest.raises(GraphexLoadError, match="unsupported"):
+    with pytest.raises(ApexgraphLoadError, match="unsupported"):
         load_graph(path)
 
 
@@ -305,19 +305,19 @@ def test_neo4j_simplified_columns_autodiscovery(tmp_path: Path) -> None:
 def test_neo4j_missing_id_column_raises(tmp_path: Path) -> None:
     nodes = tmp_path / "bad_nodes.csv"
     nodes.write_text("name,labels\nFirst,Concept\n", encoding="utf-8")
-    with pytest.raises(GraphexLoadError, match="node-id column"):
+    with pytest.raises(ApexgraphLoadError, match="node-id column"):
         load_graph_neo4j(nodes)
 
 
 def test_neo4j_no_data_rows_raises(tmp_path: Path) -> None:
     nodes = tmp_path / "header_only_nodes.csv"
     nodes.write_text(":ID,name\n", encoding="utf-8")
-    with pytest.raises(GraphexLoadError, match="no data rows"):
+    with pytest.raises(ApexgraphLoadError, match="no data rows"):
         load_graph_neo4j(nodes)
 
 
 def test_neo4j_nodes_file_missing_raises(tmp_path: Path) -> None:
-    with pytest.raises(GraphexLoadError, match="not found"):
+    with pytest.raises(ApexgraphLoadError, match="not found"):
         load_graph_neo4j(tmp_path / "nope_nodes.csv")
 
 
@@ -345,5 +345,5 @@ def test_convert_neo4j_writes_two_csvs(tmp_path: Path) -> None:
 
 def test_convert_unknown_format_raises(tmp_path: Path) -> None:
     kg = KnowledgeGraph()
-    with pytest.raises(GraphexLoadError, match="unknown export format"):
+    with pytest.raises(ApexgraphLoadError, match="unknown export format"):
         convert_graph(kg, tmp_path / "x", format="bogus")

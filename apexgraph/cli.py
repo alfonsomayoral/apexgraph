@@ -1,7 +1,7 @@
-"""Command-line interface for Graphex.
+"""Command-line interface for Apexgraph.
 
-``graphex QUERY`` is the default: any unrecognised first argument is routed to
-the hidden ``query`` command, so ``graphex "how does auth work"`` just works.
+``apexgraph QUERY`` is the default: any unrecognised first argument is routed to
+the hidden ``query`` command, so ``apexgraph "how does auth work"`` just works.
 """
 
 from __future__ import annotations
@@ -18,21 +18,21 @@ import click
 from rich.console import Console
 from rich.table import Table
 
-from graphex import __version__
+from apexgraph import __version__
 
 _GRAPH_SEARCH_PATHS = [
     Path("graph.json"),
     Path("graphify-out/graph.json"),
     Path(".graphify/graph.json"),
-    Path(".graphex/graph.json"),
+    Path(".apexgraph/graph.json"),
 ]
 
 _BANNER = r"""
-  __ _ _ __ __ _ _ __ | |__   _____  __
- / _` | '__/ _` | '_ \| '_ \ / _ \ \/ /
-| (_| | | | (_| | |_) | | | |  __/>  <
- \__, |_|  \__,_| .__/|_| |_|\___/_/\_\
- |___/          |_|   apex-relevance graph retrieval
+                                       _
+ __ _ _ __  _____ ____ _ _ _ __ _ _ __| |_
+/ _` | '_ \/ -_) \ / _` | '_/ _` | '_ \ ' \
+\__,_| .__/\___/_\_\__, |_| \__,_| .__/_||_|
+     |_|           |___/         |_|  apex-relevance subgraph retrieval
 """
 
 
@@ -56,18 +56,18 @@ def _resolve_graph(graph: str | None) -> Path:
     path = Path(graph) if graph else _find_graph()
     if path is None:
         raise click.ClickException(
-            "No graph found. Run `graphex index .` to build one, or pass --graph PATH.\n"
+            "No graph found. Run `apexgraph index .` to build one, or pass --graph PATH.\n"
             "Searched: " + ", ".join(str(p) for p in _GRAPH_SEARCH_PATHS)
         )
     return path
 
 
 def _load(graph_path: Path):
-    from graphex.loader import GraphexLoadError, load_graph
+    from apexgraph.loader import ApexgraphLoadError, load_graph
 
     try:
         return load_graph(graph_path)
-    except GraphexLoadError as exc:
+    except ApexgraphLoadError as exc:
         raise click.ClickException(str(exc)) from exc
 
 
@@ -82,11 +82,11 @@ def _version_callback(ctx: click.Context, _param: click.Parameter, value: bool) 
     if not value or ctx.resilient_parsing:
         return
     click.echo(_BANNER)
-    click.echo(f"graphex v{__version__}\n")
+    click.echo(f"apexgraph v{__version__}\n")
     ctx.exit()
 
 
-class _GraphexGroup(click.Group):
+class _ApexgraphGroup(click.Group):
     """Route an unrecognised first argument to the hidden ``query`` command.
 
     A single-token first argument that closely resembles a real command (e.g.
@@ -109,7 +109,7 @@ class _GraphexGroup(click.Group):
                 if close:
                     raise click.UsageError(
                         f"No such command {first!r}. Did you mean {close[0]!r}? "
-                        f'(Use quotes to search, e.g. graphex "{first}".)'
+                        f'(Use quotes to search, e.g. apexgraph "{first}".)'
                     ) from None
             query_cmd = self.get_command(ctx, "query")
             if query_cmd is not None:
@@ -117,7 +117,7 @@ class _GraphexGroup(click.Group):
             raise
 
 
-@click.group(cls=_GraphexGroup, invoke_without_command=True)
+@click.group(cls=_ApexgraphGroup, invoke_without_command=True)
 @click.option(
     "--version",
     is_flag=True,
@@ -128,11 +128,11 @@ class _GraphexGroup(click.Group):
 )
 @click.pass_context
 def cli(ctx: click.Context) -> None:
-    """Graphex - apex-relevance subgraph retrieval for AI agents.
+    """Apexgraph - apex-relevance subgraph retrieval for AI agents.
 
     Select the most relevant subgraph for your query within a token budget.
 
-        graphex "how does auth work" --budget 4000
+        apexgraph "how does auth work" --budget 4000
     """
     _force_utf8()
     if ctx.invoked_subcommand is None:
@@ -199,7 +199,7 @@ def cli(ctx: click.Context) -> None:
     help="Stitch the result toward a connected subgraph by adding minimal bridge "
     "nodes within budget (best-effort; can't bridge already-disconnected components).",
 )
-@click.option("--ignore-file", default=".graphexignore", show_default=True)
+@click.option("--ignore-file", default=".apexgraphignore", show_default=True)
 @click.option("--no-cache", is_flag=True, help="Skip the on-disk cache.")
 @click.option("--no-audit", is_flag=True, help="Skip writing to the audit log.")
 @click.option("--viz", is_flag=True, help="Open an interactive visualisation in the browser.")
@@ -224,10 +224,10 @@ def query_cmd(
     viz: bool,
 ) -> None:
     """Retrieve the apex subgraph for QUERY within a token budget."""
-    from graphex.budget import select_subgraph
-    from graphex.cache import load_or_build
-    from graphex.ignore import apply_ignore, load_ignore
-    from graphex.scorer import score_nodes, score_nodes_detailed
+    from apexgraph.budget import select_subgraph
+    from apexgraph.cache import load_or_build
+    from apexgraph.ignore import apply_ignore, load_ignore
+    from apexgraph.scorer import score_nodes, score_nodes_detailed
 
     if not query.strip():
         raise click.ClickException("Query must not be empty.")
@@ -269,7 +269,7 @@ def query_cmd(
         connected=connected,
     )
 
-    from graphex.formatter import format_subgraph
+    from apexgraph.formatter import format_subgraph
 
     click.echo(format_subgraph(sub, stats, format=fmt, scores=scores, query=query))
 
@@ -281,10 +281,10 @@ def query_cmd(
         )
 
     if not no_audit:
-        from graphex.audit import log_query
+        from apexgraph.audit import log_query
 
         top = sorted(sub.node_ids, key=lambda n: scores.get(n, 0.0), reverse=True)
-        log_query(query, graph_path, stats, top, audit_dir=graph_path.parent / ".graphex")
+        log_query(query, graph_path, stats, top, audit_dir=graph_path.parent / ".apexgraph")
 
     # The breakdown table is markdown-only — appending it to json/yaml would
     # corrupt machine-readable output.
@@ -329,7 +329,7 @@ def _explain_table(sub, breakdown) -> Table:
 
 
 def _open_viz(sub, stats, scores, query: str) -> None:
-    from graphex.viz import build_html
+    from apexgraph.viz import build_html
 
     html = build_html(sub, stats, scores, query)
     with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
@@ -377,7 +377,7 @@ def stats(graph: str | None) -> None:
     default=None,
     help="Output graph.json (default: <path>/graphify-out/graph.json).",
 )
-@click.option("--ignore-file", default=".graphexignore", show_default=True)
+@click.option("--ignore-file", default=".apexgraphignore", show_default=True)
 @click.option("--incremental", is_flag=True, help="Only re-index files whose content changed.")
 @click.option(
     "--strict-ids",
@@ -390,8 +390,8 @@ def index_cmd(
     """Build a graph.json by statically indexing a source tree (no LLM)."""
     import json
 
-    from graphex.ignore import load_ignore
-    from graphex.indexer.project import index_project, index_project_incremental
+    from apexgraph.ignore import load_ignore
+    from apexgraph.indexer.project import index_project, index_project_incremental
 
     root = Path(path).resolve()
     out = Path(output) if output else root / "graphify-out" / "graph.json"
@@ -399,7 +399,7 @@ def index_cmd(
 
     click.echo(f"Indexing {root} ...")
     if incremental:
-        cache_path = root / ".graphex" / "index_cache.json"
+        cache_path = root / ".apexgraph" / "index_cache.json"
         graph = index_project_incremental(root, cache_path, ignore, strict_ids=strict_ids)
     else:
         graph = index_project(root, ignore, strict_ids=strict_ids)
@@ -410,7 +410,7 @@ def index_cmd(
     files = len({n.get("source_file") for n in graph["nodes"] if n.get("source_file")})
     click.echo(f"  {len(graph['nodes'])} nodes · {len(graph['links'])} edges · {files} files")
     click.echo(f"  Saved: {out}")
-    click.echo(f'\nNext: graphex "your query" --graph {out}')
+    click.echo(f'\nNext: apexgraph "your query" --graph {out}')
 
 
 # ---------------------------------------------------------------------------
@@ -423,8 +423,8 @@ def index_cmd(
     "--graph", "-g", default=None, help="Path to graph.json (auto-discovered if omitted)."
 )
 def serve(graph: str | None) -> None:
-    """Start an MCP stdio server exposing the graphex_* tools."""
-    from graphex import mcp
+    """Start an MCP stdio server exposing the apexgraph_* tools."""
+    from apexgraph import mcp
 
     graph_path = _resolve_graph(graph)
     _load(graph_path)  # fail fast with a clean error before entering the stdio loop
@@ -512,7 +512,7 @@ def path_cmd(source: str, target: str, graph: str | None) -> None:
 @click.option("--viz", is_flag=True, help="Open the affected area in the browser.")
 def diff_cmd(old_graph: str, new_graph: str, hops: int, budget: int | None, viz: bool) -> None:
     """Compare two graph versions and show the impact of the changes."""
-    from graphex.diff import affected_subgraph, diff_graphs, format_diff
+    from apexgraph.diff import affected_subgraph, diff_graphs, format_diff
 
     old = _load(Path(old_graph))
     new = _load(Path(new_graph))
@@ -520,9 +520,9 @@ def diff_cmd(old_graph: str, new_graph: str, hops: int, budget: int | None, viz:
     click.echo(format_diff(diff, new))
 
     if budget is not None:
-        from graphex.budget import select_subgraph
-        from graphex.formatter import format_subgraph
-        from graphex.scorer import score_nodes
+        from apexgraph.budget import select_subgraph
+        from apexgraph.formatter import format_subgraph
+        from apexgraph.scorer import score_nodes
 
         affected = affected_subgraph(new, diff, hops)
         if len(affected) > 0:
@@ -571,10 +571,10 @@ def export_cmd(
     query: str, graph: str | None, budget: int, fmt: str, output: str | None, min_score: float
 ) -> None:
     """Export a context block ready to paste into a system prompt or CLAUDE.md."""
-    from graphex.budget import select_subgraph
-    from graphex.cache import load_or_build
-    from graphex.exporter import export_context
-    from graphex.scorer import score_nodes
+    from apexgraph.budget import select_subgraph
+    from apexgraph.cache import load_or_build
+    from apexgraph.exporter import export_context
+    from apexgraph.scorer import score_nodes
 
     if not query.strip():
         raise click.ClickException("Query must not be empty.")
@@ -601,17 +601,17 @@ def export_cmd(
 @cli.command()
 @click.option("--top-nodes", "top_n", default=10, show_default=True)
 @click.option(
-    "--audit-dir", default=None, help="Audit directory (default: the graph's .graphex sidecar)."
+    "--audit-dir", default=None, help="Audit directory (default: the graph's .apexgraph sidecar)."
 )
 def audit(top_n: int, audit_dir: str | None) -> None:
     """Show query history and the most frequently selected nodes."""
-    from graphex.audit import read_audit, top_nodes_from_audit
+    from apexgraph.audit import read_audit, top_nodes_from_audit
 
-    # Queries log to the discovered graph's sibling .graphex; default there so
-    # `graphex audit` reads the same place `graphex query` wrote to.
+    # Queries log to the discovered graph's sibling .apexgraph; default there so
+    # `apexgraph audit` reads the same place `apexgraph query` wrote to.
     if audit_dir is None:
         found = _find_graph()
-        audit_dir = str((found.parent / ".graphex") if found else Path(".graphex"))
+        audit_dir = str((found.parent / ".apexgraph") if found else Path(".apexgraph"))
 
     entries = read_audit(audit_dir)
     if not entries:
@@ -679,8 +679,8 @@ def benchmark_cmd(
     """Measure recall@budget and token savings across queries and budgets."""
     import json
 
-    from graphex.benchmark import format_benchmark, run_benchmark
-    from graphex.cache import load_or_build
+    from apexgraph.benchmark import format_benchmark, run_benchmark
+    from apexgraph.cache import load_or_build
 
     graph_path = _resolve_graph(graph)
     kg = _load(graph_path)
@@ -698,7 +698,7 @@ def benchmark_cmd(
 # ---------------------------------------------------------------------------
 
 _DEFAULT_IGNORE = """\
-# graphex ignore — gitignore syntax, matched against node id and source_file
+# apexgraph ignore — gitignore syntax, matched against node id and source_file
 */tests/*
 */__pycache__/*
 *.test.ts
@@ -708,10 +708,10 @@ _DEFAULT_IGNORE = """\
 
 @cli.command()
 def init() -> None:
-    """Scaffold a .graphexignore in the current directory."""
-    path = Path(".graphexignore")
+    """Scaffold a .apexgraphignore in the current directory."""
+    path = Path(".apexgraphignore")
     if path.exists():
-        click.echo(".graphexignore already exists — leaving it untouched.")
+        click.echo(".apexgraphignore already exists — leaving it untouched.")
         return
     path.write_text(_DEFAULT_IGNORE, encoding="utf-8")
     click.echo(f"Created {path}")

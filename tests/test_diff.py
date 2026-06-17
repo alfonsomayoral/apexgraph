@@ -1,9 +1,9 @@
-"""Tests for :mod:`graphex.diff`."""
+"""Tests for :mod:`apexgraph.diff`."""
 
 from __future__ import annotations
 
-from graphex.diff import GraphDiff, affected_subgraph, diff_graphs, format_diff
-from graphex.models import Edge, KnowledgeGraph, Node
+from apexgraph.diff import GraphDiff, affected_subgraph, diff_graphs, format_diff
+from apexgraph.models import Edge, KnowledgeGraph, Node
 
 
 def _old() -> KnowledgeGraph:

@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from graphex.budget import select_subgraph
-from graphex.injector import inject_code, safe_source_path
-from graphex.models import KnowledgeGraph, Node
+from apexgraph.budget import select_subgraph
+from apexgraph.injector import inject_code, safe_source_path
+from apexgraph.models import KnowledgeGraph, Node
 
 
 def test_safe_source_path_rejects_escapes(tmp_path: Path):

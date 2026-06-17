@@ -1,7 +1,7 @@
 """Multi-format loaders that materialize a :class:`KnowledgeGraph`.
 
-Graphex reads knowledge graphs from several on-disk shapes and normalizes them
-all onto the single contract in :mod:`graphex.models`:
+Apexgraph reads knowledge graphs from several on-disk shapes and normalizes them
+all onto the single contract in :mod:`apexgraph.models`:
 
 - ``.json`` — graphify's native serialization (``nodes`` + ``links`` +
   ``hyperedges``) or a generic ``nodes`` + ``edges`` dict. This is the primary,
@@ -14,7 +14,7 @@ all onto the single contract in :mod:`graphex.models`:
   flavour).
 
 Anything that cannot be parsed into a usable graph raises
-:class:`GraphexLoadError` with a message that names the offending path.
+:class:`ApexgraphLoadError` with a message that names the offending path.
 """
 
 from __future__ import annotations
@@ -27,10 +27,10 @@ from typing import Any
 
 import networkx as nx
 
-from graphex.models import Edge, Hyperedge, KnowledgeGraph, Node
+from apexgraph.models import Edge, Hyperedge, KnowledgeGraph, Node
 
 __all__ = [
-    "GraphexLoadError",
+    "ApexgraphLoadError",
     "load_graph",
     "load_graph_neo4j",
     "convert_graph",
@@ -38,7 +38,7 @@ __all__ = [
 ]
 
 
-class GraphexLoadError(Exception):
+class ApexgraphLoadError(Exception):
     """Raised when a graph cannot be loaded or converted.
 
     The message always includes the offending path so failures are actionable.
@@ -140,7 +140,7 @@ def _pick(row: dict[str, Any], candidates: list[str]) -> Any:
 def _build_node(raw: dict[str, Any], path: Path) -> Node:
     """Construct a :class:`Node` from a raw payload, routing extras to ``extra``."""
     if "id" not in raw or raw["id"] in (None, ""):
-        raise GraphexLoadError(f"{path}: node is missing required 'id' field")
+        raise ApexgraphLoadError(f"{path}: node is missing required 'id' field")
 
     node_id = str(raw["id"])
     is_god = bool(raw.get("is_god", raw.get("god", False)))
@@ -187,7 +187,7 @@ def _build_edge(raw: dict[str, Any]) -> Edge | None:
 def _build_hyperedge(raw: dict[str, Any], path: Path) -> Hyperedge:
     """Construct a :class:`Hyperedge` from a raw payload."""
     if "id" not in raw or raw["id"] in (None, ""):
-        raise GraphexLoadError(f"{path}: hyperedge is missing required 'id' field")
+        raise ApexgraphLoadError(f"{path}: hyperedge is missing required 'id' field")
     nodes = raw.get("nodes") or []
     return Hyperedge(
         id=str(raw["id"]),
@@ -224,29 +224,29 @@ def _load_json(path: Path) -> KnowledgeGraph:
     try:
         text = path.read_text(encoding="utf-8")
     except FileNotFoundError as exc:
-        raise GraphexLoadError(f"{path}: file not found") from exc
+        raise ApexgraphLoadError(f"{path}: file not found") from exc
     except OSError as exc:
-        raise GraphexLoadError(f"{path}: could not read file ({exc})") from exc
+        raise ApexgraphLoadError(f"{path}: could not read file ({exc})") from exc
 
     try:
         data = json.loads(text)
     except json.JSONDecodeError as exc:
-        raise GraphexLoadError(f"{path}: invalid JSON ({exc})") from exc
+        raise ApexgraphLoadError(f"{path}: invalid JSON ({exc})") from exc
 
     if not isinstance(data, dict):
-        raise GraphexLoadError(f"{path}: top-level JSON must be an object with a 'nodes' array")
+        raise ApexgraphLoadError(f"{path}: top-level JSON must be an object with a 'nodes' array")
 
     raw_nodes = data.get("nodes")
     if not raw_nodes:
-        raise GraphexLoadError(f"{path}: graph has no nodes")
+        raise ApexgraphLoadError(f"{path}: graph has no nodes")
     if not isinstance(raw_nodes, list):
-        raise GraphexLoadError(f"{path}: 'nodes' must be an array")
+        raise ApexgraphLoadError(f"{path}: 'nodes' must be an array")
 
     kg = KnowledgeGraph()
     node_ids: set[str] = set()
     for raw in raw_nodes:
         if not isinstance(raw, dict):
-            raise GraphexLoadError(f"{path}: every node must be an object")
+            raise ApexgraphLoadError(f"{path}: every node must be an object")
         node = _build_node(raw, path)
         kg.add_node(node)
         node_ids.add(node.id)
@@ -283,11 +283,11 @@ def _load_json(path: Path) -> KnowledgeGraph:
 def _load_graphml(path: Path) -> KnowledgeGraph:
     """Load a GraphML file, canonicalizing attribute names onto the contract."""
     if not path.exists():
-        raise GraphexLoadError(f"{path}: file not found")
+        raise ApexgraphLoadError(f"{path}: file not found")
     try:
         graph = nx.read_graphml(path)
     except Exception as exc:  # nx raises a grab-bag of parse errors
-        raise GraphexLoadError(f"{path}: could not parse GraphML ({exc})") from exc
+        raise ApexgraphLoadError(f"{path}: could not parse GraphML ({exc})") from exc
 
     kg = KnowledgeGraph()
     node_ids: set[str] = set()
@@ -385,14 +385,14 @@ _REL_RESERVED = {
 def _read_csv_rows(path: Path) -> tuple[list[str], list[dict[str, str]]]:
     """Read a CSV into (fieldnames, rows). Raises on a missing file."""
     if not path.exists():
-        raise GraphexLoadError(f"{path}: file not found")
+        raise ApexgraphLoadError(f"{path}: file not found")
     try:
         with path.open("r", encoding="utf-8", newline="") as handle:
             reader = csv.DictReader(handle)
             fieldnames = list(reader.fieldnames or [])
             rows = [row for row in reader]
     except OSError as exc:
-        raise GraphexLoadError(f"{path}: could not read CSV ({exc})") from exc
+        raise ApexgraphLoadError(f"{path}: could not read CSV ({exc})") from exc
     return fieldnames, rows
 
 
@@ -448,16 +448,16 @@ def load_graph_neo4j(nodes_path: Path, relationships_path: Path | None = None) -
     skipped silently.
 
     Raises:
-        GraphexLoadError: if the nodes file is missing, has no recognizable ID
+        ApexgraphLoadError: if the nodes file is missing, has no recognizable ID
             column, or contains no data rows.
     """
     fieldnames, rows = _read_csv_rows(nodes_path)
     if not any(col in fieldnames for col in _NODE_ID_COLS):
-        raise GraphexLoadError(
+        raise ApexgraphLoadError(
             f"{nodes_path}: no node-id column found " f"(expected one of {_NODE_ID_COLS})"
         )
     if not rows:
-        raise GraphexLoadError(f"{nodes_path}: nodes CSV has no data rows")
+        raise ApexgraphLoadError(f"{nodes_path}: nodes CSV has no data rows")
 
     kg = KnowledgeGraph()
     node_ids: set[str] = set()
@@ -529,7 +529,7 @@ def load_graph(path: Path) -> KnowledgeGraph:
     - ``.csv`` — Neo4j nodes CSV; a sibling relationships CSV is auto-discovered.
 
     Raises:
-        GraphexLoadError: for a missing file, an unsupported extension, or any
+        ApexgraphLoadError: for a missing file, an unsupported extension, or any
             format-specific failure.
     """
     path = Path(path)
@@ -541,11 +541,11 @@ def load_graph(path: Path) -> KnowledgeGraph:
         return _load_graphml(path)
     if suffix == ".csv":
         if not path.exists():
-            raise GraphexLoadError(f"{path}: file not found")
+            raise ApexgraphLoadError(f"{path}: file not found")
         relationships = _discover_relationships_csv(path)
         return load_graph_neo4j(path, relationships)
 
-    raise GraphexLoadError(
+    raise ApexgraphLoadError(
         f"{path}: unsupported extension '{suffix}' " f"(expected .json, .graphml or .csv)"
     )
 
@@ -583,7 +583,7 @@ def _convert_graphml(kg: KnowledgeGraph, output_path: Path) -> list[Path]:
     try:
         nx.write_graphml(graph, output_path)
     except Exception as exc:
-        raise GraphexLoadError(f"{output_path}: could not write GraphML ({exc})") from exc
+        raise ApexgraphLoadError(f"{output_path}: could not write GraphML ({exc})") from exc
     return [output_path]
 
 
@@ -638,7 +638,7 @@ def _convert_neo4j(kg: KnowledgeGraph, output_path: Path) -> list[Path]:
                     ]
                 )
     except OSError as exc:
-        raise GraphexLoadError(f"{output_path}: could not write Neo4j CSVs ({exc})") from exc
+        raise ApexgraphLoadError(f"{output_path}: could not write Neo4j CSVs ({exc})") from exc
 
     return [nodes_path, rels_path]
 
@@ -657,7 +657,7 @@ def convert_graph(kg: KnowledgeGraph, output_path: Path, format: str = "graphml"
         The list of file paths actually written.
 
     Raises:
-        GraphexLoadError: for an unknown format or a write failure.
+        ApexgraphLoadError: for an unknown format or a write failure.
     """
     output_path = Path(output_path)
     fmt = format.lower()
@@ -665,6 +665,6 @@ def convert_graph(kg: KnowledgeGraph, output_path: Path, format: str = "graphml"
         return _convert_graphml(kg, output_path)
     if fmt == "neo4j":
         return _convert_neo4j(kg, output_path)
-    raise GraphexLoadError(
+    raise ApexgraphLoadError(
         f"{output_path}: unknown export format '{format}' " f"(expected 'graphml' or 'neo4j')"
     )

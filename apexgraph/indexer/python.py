@@ -9,7 +9,7 @@ Walks a single ``.py`` file into a graphify-compatible ``(nodes, edges)`` pair:
 
 Lexical scoping is preserved with ``contains`` edges from each enclosing scope
 (module or class) to the symbols defined directly inside it. Node IDs follow the
-graphify convention shared across all indexers (see :mod:`graphex.indexer.python`'s
+graphify convention shared across all indexers (see :mod:`apexgraph.indexer.python`'s
 ``_make_ids`` helpers): a module id is ``{parent_dir}_{stem}`` and a symbol id is
 ``{module_id}_{symbol_name}``, both normalized to ``[a-z0-9_]``.
 """

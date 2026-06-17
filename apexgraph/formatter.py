@@ -1,6 +1,6 @@
 """Render a selected subgraph into a token-friendly textual representation.
 
-The retrieval pipeline hands this module a :class:`~graphex.models.KnowledgeGraph`
+The retrieval pipeline hands this module a :class:`~apexgraph.models.KnowledgeGraph`
 that has already been pruned to the selected nodes, plus a ``stats`` dict
 describing the budget accounting. This module turns that into one of three output
 formats — ``markdown`` (human-/LLM-facing, the default), ``json`` (machine-facing,
@@ -8,7 +8,7 @@ exact), or ``yaml`` (a hand-rolled, dependency-free emit of the same structure).
 
 Markdown is the interesting one: it opens with a Unicode box header echoing the
 query and budget, lists the selected nodes (best first) with their descriptions
-and — when :func:`~graphex.injector.inject_code` has run — their source code in a
+and — when :func:`~apexgraph.injector.inject_code` has run — their source code in a
 language-tagged fence, then summarises the relationships between them.
 """
 
@@ -17,7 +17,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from graphex.models import KnowledgeGraph
+from apexgraph.models import KnowledgeGraph
 
 # Map a source-file extension to the language tag used in a Markdown code fence.
 # Anything unrecognised falls back to an empty tag (a plain ``` ``` fence).
@@ -95,7 +95,7 @@ def _edge_payload(graph: KnowledgeGraph) -> list[dict[str, Any]]:
 def _box_header(query: str, stats: dict[str, Any]) -> str:
     """Render the Unicode box header showing the query and budget summary."""
     budget = stats.get("tokens_budget", 0)
-    title = f"Graphex subgraph for: {query}" if query else "Graphex subgraph"
+    title = f"Apexgraph subgraph for: {query}" if query else "Apexgraph subgraph"
     subtitle = (
         f"Selected {stats.get('nodes_selected', 0)}/{stats.get('nodes_total', 0)} "
         f"nodes ({stats.get('coverage_pct', 0)}%) · "

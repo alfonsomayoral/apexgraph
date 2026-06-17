@@ -1,1 +1,1 @@
-"""Task-tracker demo package indexed by Graphex."""
+"""Task-tracker demo package indexed by Apexgraph."""

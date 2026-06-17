@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from graphex.cache import CACHE_DIRNAME, build_artifacts, load_or_build
-from graphex.models import Edge, KnowledgeGraph, Node
+from apexgraph.cache import CACHE_DIRNAME, build_artifacts, load_or_build
+from apexgraph.models import Edge, KnowledgeGraph, Node
 
 
 def _graph(extra: bool = False) -> KnowledgeGraph:

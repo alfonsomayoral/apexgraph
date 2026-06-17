@@ -3,22 +3,22 @@
 The default semantic path: real embeddings with **no API key and no network at
 query time**. Uses ``model2vec`` static embeddings — distilled, CPU-friendly,
 and fast enough to run inline — to score nodes by cosine similarity to the
-query. Like :mod:`graphex.retrieval.dense`, its ranking can be blended with BM25
-via Reciprocal Rank Fusion in :mod:`graphex.retrieval.fusion`.
+query. Like :mod:`apexgraph.retrieval.dense`, its ranking can be blended with BM25
+via Reciprocal Rank Fusion in :mod:`apexgraph.retrieval.fusion`.
 
 Node embeddings are query-independent, so the caller can compute them once with
 :meth:`LocalEmbeddingRetriever.node_embeddings`, cache them, and pass them back
 into :meth:`LocalEmbeddingRetriever.score` on every query.
 
-Requires ``pip install 'graphex[local]'``.
+Requires ``pip install 'apexgraph[local]'``.
 """
 
 from __future__ import annotations
 
 import math
 
-from graphex.models import KnowledgeGraph
-from graphex.retrieval.base import normalize
+from apexgraph.models import KnowledgeGraph
+from apexgraph.retrieval.base import normalize
 
 _DEFAULT_MODEL = "minishlab/potion-base-8M"
 
@@ -61,7 +61,7 @@ class LocalEmbeddingRetriever:
                 from model2vec import StaticModel
             except ImportError as exc:  # pragma: no cover - exercised only without the extra
                 raise ImportError(
-                    "The local backend requires: pip install 'graphex[local]'"
+                    "The local backend requires: pip install 'apexgraph[local]'"
                 ) from exc
             self._model = StaticModel.from_pretrained(self.model_name)
         # model2vec returns a numpy array; convert each row to a plain list[float]

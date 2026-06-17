@@ -1,4 +1,4 @@
-"""Tests for :mod:`graphex.formatter`."""
+"""Tests for :mod:`apexgraph.formatter`."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ import json
 
 import pytest
 
-from graphex.formatter import format_subgraph
-from graphex.models import Edge, KnowledgeGraph, Node
+from apexgraph.formatter import format_subgraph
+from apexgraph.models import Edge, KnowledgeGraph, Node
 
 
 def _build_graph() -> KnowledgeGraph:
@@ -54,7 +54,7 @@ def _stats() -> dict[str, object]:
 def test_markdown_header_box_and_subtitle() -> None:
     out = format_subgraph(_build_graph(), _stats(), query="how are stats computed")
     assert "┌" in out and "┐" in out and "└" in out and "┘" in out
-    assert "Graphex subgraph for: how are stats computed" in out
+    assert "Apexgraph subgraph for: how are stats computed" in out
     assert "Selected 2/5 nodes (24%) · 120/500 tokens" in out
 
 

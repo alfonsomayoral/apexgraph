@@ -1,7 +1,7 @@
 """Retriever interface shared by every scoring backend.
 
 A retriever turns a free-text query into a ``{node_id: score}`` mapping over a
-:class:`~graphex.models.KnowledgeGraph`. Scores are expected to be non-negative;
+:class:`~apexgraph.models.KnowledgeGraph`. Scores are expected to be non-negative;
 callers normalise to ``[0, 1]`` where a bounded range matters.
 """
 
@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from graphex.models import KnowledgeGraph
+from apexgraph.models import KnowledgeGraph
 
 
 @runtime_checkable

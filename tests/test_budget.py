@@ -7,13 +7,13 @@ from pathlib import Path
 import networkx as nx
 import pytest
 
-from graphex.budget import (
+from apexgraph.budget import (
     _NODE_OVERHEAD_TOKENS,
     _node_body,
     count_tokens,
     select_subgraph,
 )
-from graphex.models import Edge, KnowledgeGraph, Node
+from apexgraph.models import Edge, KnowledgeGraph, Node
 
 
 def _chain_graph(n: int = 12) -> KnowledgeGraph:

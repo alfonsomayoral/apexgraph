@@ -10,11 +10,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from graphex.indexer.go import index_go
-from graphex.indexer.project import index_project, index_project_incremental
-from graphex.indexer.python import index_python
-from graphex.indexer.typescript import index_typescript
-from graphex.loader import load_graph
+from apexgraph.indexer.go import index_go
+from apexgraph.indexer.project import index_project, index_project_incremental
+from apexgraph.indexer.python import index_python
+from apexgraph.indexer.typescript import index_typescript
+from apexgraph.loader import load_graph
 
 
 def _nodes_by_id(nodes: list[dict]) -> dict[str, dict]:

@@ -1,11 +1,11 @@
-"""Tests for :mod:`graphex.injector`."""
+"""Tests for :mod:`apexgraph.injector`."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from graphex.injector import extract_code_block, inject_code
-from graphex.models import KnowledgeGraph, Node
+from apexgraph.injector import extract_code_block, inject_code
+from apexgraph.models import KnowledgeGraph, Node
 
 _PY_SOURCE = """\
 import os

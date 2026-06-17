@@ -6,11 +6,11 @@ import json
 
 from click.testing import CliRunner
 
-from graphex.budget import select_subgraph
-from graphex.cli import cli
-from graphex.loader import load_graph
-from graphex.models import KnowledgeGraph, Node
-from graphex.retrieval.fusion import importance_prior
+from apexgraph.budget import select_subgraph
+from apexgraph.cli import cli
+from apexgraph.loader import load_graph
+from apexgraph.models import KnowledgeGraph, Node
+from apexgraph.retrieval.fusion import importance_prior
 
 
 def _graph(n: int = 6) -> KnowledgeGraph:

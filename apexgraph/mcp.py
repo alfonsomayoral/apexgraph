@@ -1,4 +1,4 @@
-"""An MCP stdio server exposing Graphex retrieval over JSON-RPC 2.0.
+"""An MCP stdio server exposing Apexgraph retrieval over JSON-RPC 2.0.
 
 This module speaks the Model Context Protocol's stdio transport: newline-delimited
 JSON-RPC 2.0 messages on stdin/stdout, protocol version ``2024-11-05``. It loads a
@@ -9,10 +9,10 @@ rather than re-indexing the whole graph.
 
 Four tools are exposed:
 
-- ``graphex_query`` — score → select a token-budgeted subgraph → format it.
-- ``graphex_explain`` — focused markdown view of one node and its neighbours.
-- ``graphex_path`` — shortest path between two nodes, rendered with labels.
-- ``graphex_stats`` — node/edge/hyperedge/community/god-node counts.
+- ``apexgraph_query`` — score → select a token-budgeted subgraph → format it.
+- ``apexgraph_explain`` — focused markdown view of one node and its neighbours.
+- ``apexgraph_path`` — shortest path between two nodes, rendered with labels.
+- ``apexgraph_stats`` — node/edge/hyperedge/community/god-node counts.
 
 The transport uses only the standard library (``json`` + ``sys``); there is no
 MCP SDK dependency. :func:`serve` is the entry point; :func:`_handle` is the
@@ -28,16 +28,16 @@ from typing import Any, TextIO
 
 import networkx as nx
 
-from graphex import __version__
-from graphex.budget import select_subgraph
-from graphex.cache import CachedArtifacts, load_or_build
-from graphex.formatter import format_subgraph
-from graphex.loader import GraphexLoadError, load_graph
-from graphex.models import KnowledgeGraph
-from graphex.scorer import score_nodes
+from apexgraph import __version__
+from apexgraph.budget import select_subgraph
+from apexgraph.cache import CachedArtifacts, load_or_build
+from apexgraph.formatter import format_subgraph
+from apexgraph.loader import ApexgraphLoadError, load_graph
+from apexgraph.models import KnowledgeGraph
+from apexgraph.scorer import score_nodes
 
 PROTOCOL_VERSION = "2024-11-05"
-SERVER_NAME = "graphex"
+SERVER_NAME = "apexgraph"
 
 DEFAULT_BUDGET = 4000
 
@@ -55,7 +55,7 @@ INTERNAL_ERROR = -32603
 
 _TOOLS: list[dict[str, Any]] = [
     {
-        "name": "graphex_query",
+        "name": "apexgraph_query",
         "description": (
             "Retrieve the highest-relevance subgraph for a natural-language query "
             "that fits within a token budget. Returns the rendered subgraph."
@@ -83,7 +83,7 @@ _TOOLS: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "graphex_explain",
+        "name": "apexgraph_explain",
         "description": (
             "Explain a single node: its label, type, description and source file, "
             "plus its immediate predecessors and successors with their relations."
@@ -100,7 +100,7 @@ _TOOLS: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "graphex_path",
+        "name": "apexgraph_path",
         "description": (
             "Find the shortest path between two nodes (directed first, then "
             "undirected) and render it with node labels."
@@ -115,7 +115,7 @@ _TOOLS: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "graphex_stats",
+        "name": "apexgraph_stats",
         "description": (
             "Report graph-level counts: nodes, edges, hyperedges, distinct "
             "communities and god nodes."
@@ -317,13 +317,13 @@ def _dispatch_tool(
     cache: CachedArtifacts,
 ) -> str:
     """Route a ``tools/call`` to the right implementation, returning text."""
-    if name == "graphex_query":
+    if name == "apexgraph_query":
         return _tool_query(args, graph, cache)
-    if name == "graphex_explain":
+    if name == "apexgraph_explain":
         return _tool_explain(args, graph)
-    if name == "graphex_path":
+    if name == "apexgraph_path":
         return _tool_path(args, graph)
-    if name == "graphex_stats":
+    if name == "apexgraph_stats":
         return _tool_stats(graph)
     raise _ToolError(INVALID_PARAMS, f"unknown tool {name!r}")
 
@@ -446,14 +446,14 @@ def serve(graph_path: Path, inp: TextIO | None = None, out: TextIO | None = None
 
 
 def main(argv: list[str] | None = None) -> int:
-    """CLI entry point: ``python -m graphex.mcp <graph-path>``."""
+    """CLI entry point: ``python -m apexgraph.mcp <graph-path>``."""
     args = argv if argv is not None else sys.argv[1:]
     if len(args) != 1:
-        sys.stderr.write("usage: python -m graphex.mcp <graph-path>\n")
+        sys.stderr.write("usage: python -m apexgraph.mcp <graph-path>\n")
         return 2
     try:
         serve(Path(args[0]))
-    except GraphexLoadError as exc:
+    except ApexgraphLoadError as exc:
         sys.stderr.write(f"error: {exc}\n")
         return 1
     return 0

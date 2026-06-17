@@ -20,9 +20,9 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from graphex.indexer.go import index_go
-from graphex.indexer.python import index_python
-from graphex.indexer.typescript import index_typescript
+from apexgraph.indexer.go import index_go
+from apexgraph.indexer.python import index_python
+from apexgraph.indexer.typescript import index_typescript
 
 # Extension → indexer. The callable signature is
 # ``(path: Path, root: Path | None, strict_ids: bool) -> tuple[list[dict], list[dict]]``.
@@ -48,7 +48,7 @@ _IGNORED_DIRS: frozenset[str] = frozenset(
         ".mypy_cache",
         ".ruff_cache",
         ".pytest_cache",
-        ".graphex",
+        ".apexgraph",
     }
 )
 

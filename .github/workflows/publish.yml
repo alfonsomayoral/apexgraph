@@ -3,7 +3,7 @@ name: Publish to PyPI
 # Publishes to PyPI when a GitHub Release is published, using Trusted Publishing
 # (OIDC) — no API token is stored anywhere. The PyPI project (distribution name
 # "apexgraph") must have a matching trusted publisher configured (repo:
-# alfonsomayoral/graphex, workflow: publish.yml, environment: pypi). See RELEASING.md.
+# alfonsomayoral/apexgraph, workflow: publish.yml, environment: pypi). See RELEASING.md.
 #
 # A manual `workflow_dispatch` run exercises the whole pipeline (build, metadata
 # check, artifact round-trip) as a dry run WITHOUT publishing — the upload step

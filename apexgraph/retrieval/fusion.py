@@ -13,8 +13,8 @@ lexical and dense scales.
 
 from __future__ import annotations
 
-from graphex.models import KnowledgeGraph
-from graphex.retrieval.base import normalize
+from apexgraph.models import KnowledgeGraph
+from apexgraph.retrieval.base import normalize
 
 
 def importance_prior(graph: KnowledgeGraph) -> dict[str, float]:

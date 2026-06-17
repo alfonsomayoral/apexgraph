@@ -1,11 +1,11 @@
-"""Tests for :mod:`graphex.exporter`."""
+"""Tests for :mod:`apexgraph.exporter`."""
 
 from __future__ import annotations
 
 import pytest
 
-from graphex.exporter import export_context
-from graphex.models import Edge, KnowledgeGraph, Node
+from apexgraph.exporter import export_context
+from apexgraph.models import Edge, KnowledgeGraph, Node
 
 
 def _build_graph() -> KnowledgeGraph:
@@ -63,7 +63,7 @@ def test_chatgpt_wraps_body_and_names_query() -> None:
 def test_claudemd_wraps_body_and_names_query() -> None:
     out = export_context(_build_graph(), _stats(), QUERY, format="claudemd")
     assert "## Knowledge Graph Context" in out
-    assert "graphex" in out
+    assert "apexgraph" in out
     assert QUERY in out
     assert _body_marker() in out
 

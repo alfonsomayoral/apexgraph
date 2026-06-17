@@ -1,12 +1,12 @@
-# Contributing to Graphex
+# Contributing to Apexgraph
 
-Thanks for your interest in improving Graphex.
+Thanks for your interest in improving Apexgraph.
 
 ## Setup
 
 ```bash
-git clone https://github.com/alfonsomayoral/graphex
-cd graphex
+git clone https://github.com/alfonsomayoral/apexgraph
+cd apexgraph
 uv sync
 ```
 
@@ -21,7 +21,7 @@ uv run pytest           # tests (must pass)
 ## Architecture at a glance
 
 Each module has a single responsibility; the data contract lives in
-`graphex/models.py` (`KnowledgeGraph`, `Node`, `Edge`, `Hyperedge`). The scoring
+`apexgraph/models.py` (`KnowledgeGraph`, `Node`, `Edge`, `Hyperedge`). The scoring
 pipeline is `retrieval/bm25.py` → `retrieval/ppr.py` → `retrieval/fusion.py` →
 `scorer.py`; selection is `budget.py`; the user surface is `cli.py` and `mcp.py`.
 

@@ -25,11 +25,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from graphex.cache import CachedArtifacts, load_or_build
-from graphex.models import KnowledgeGraph
-from graphex.retrieval import fusion
-from graphex.retrieval.bm25 import BM25Index
-from graphex.retrieval.ppr import normalize_max, personalized_pagerank
+from apexgraph.cache import CachedArtifacts, load_or_build
+from apexgraph.models import KnowledgeGraph
+from apexgraph.retrieval import fusion
+from apexgraph.retrieval.bm25 import BM25Index
+from apexgraph.retrieval.ppr import normalize_max, personalized_pagerank
 
 DEFAULT_SEEDS = 10
 DEFAULT_GAMMA = 0.1
@@ -42,7 +42,7 @@ BACKENDS = ("bm25", "local", "openai", "voyage")
 
 @dataclass(slots=True)
 class ScoreBreakdown:
-    """Per-node component scores, surfaced by ``graphex query --explain``."""
+    """Per-node component scores, surfaced by ``apexgraph query --explain``."""
 
     final: dict[str, float]
     bm25: dict[str, float]
@@ -66,10 +66,10 @@ def _semantic_scores(graph: KnowledgeGraph, query: str, backend: str) -> dict[st
     optional embedding dependencies.
     """
     if backend == "local":
-        from graphex.retrieval.local import LocalEmbeddingRetriever
+        from apexgraph.retrieval.local import LocalEmbeddingRetriever
 
         return LocalEmbeddingRetriever().score(graph, query)
-    from graphex.retrieval.dense import DenseRetriever
+    from apexgraph.retrieval.dense import DenseRetriever
 
     return DenseRetriever(backend=backend).score(graph, query)
 

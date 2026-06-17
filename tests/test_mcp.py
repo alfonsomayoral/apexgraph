@@ -6,9 +6,9 @@ import io
 import json
 from pathlib import Path
 
-from graphex.cache import load_or_build
-from graphex.mcp import _TOOLS, _handle, serve
-from graphex.models import Edge, Hyperedge, KnowledgeGraph, Node
+from apexgraph.cache import load_or_build
+from apexgraph.mcp import _TOOLS, _handle, serve
+from apexgraph.models import Edge, Hyperedge, KnowledgeGraph, Node
 
 
 def _small_graph() -> KnowledgeGraph:
@@ -77,7 +77,7 @@ def test_initialize_returns_server_info() -> None:
     reply = _drive(_req("initialize"), _small_graph())
     assert reply is not None
     info = reply["result"]["serverInfo"]
-    assert info["name"] == "graphex"
+    assert info["name"] == "apexgraph"
     assert reply["result"]["protocolVersion"] == "2024-11-05"
     assert "tools" in reply["result"]["capabilities"]
 
@@ -94,50 +94,50 @@ def test_tools_list_returns_all_four_tools() -> None:
     reply = _drive(_req("tools/list"), _small_graph())
     names = {t["name"] for t in reply["result"]["tools"]}
     assert names == {
-        "graphex_query",
-        "graphex_explain",
-        "graphex_path",
-        "graphex_stats",
+        "apexgraph_query",
+        "apexgraph_explain",
+        "apexgraph_path",
+        "apexgraph_stats",
     }
     assert len(_TOOLS) == 4
 
 
-# -- graphex_query -----------------------------------------------------------
+# -- apexgraph_query -----------------------------------------------------------
 
 
 def test_query_returns_text_content() -> None:
-    reply = _call("graphex_query", _small_graph(), query="authentication login")
+    reply = _call("apexgraph_query", _small_graph(), query="authentication login")
     content = reply["result"]["content"]
     assert content[0]["type"] == "text"
     assert "AuthService" in content[0]["text"]
 
 
 def test_query_missing_query_is_invalid_params() -> None:
-    reply = _call("graphex_query", _small_graph())
+    reply = _call("apexgraph_query", _small_graph())
     assert reply["error"]["code"] == -32602
 
 
 def test_query_rejects_non_positive_budget() -> None:
-    reply = _call("graphex_query", _small_graph(), query="auth", budget=0)
+    reply = _call("apexgraph_query", _small_graph(), query="auth", budget=0)
     assert reply["error"]["code"] == -32602
 
 
 def test_query_coerces_whole_float_budget() -> None:
-    reply = _call("graphex_query", _small_graph(), query="auth", budget=2000.0)
+    reply = _call("apexgraph_query", _small_graph(), query="auth", budget=2000.0)
     assert "content" in reply["result"]
 
 
 def test_query_json_format() -> None:
-    reply = _call("graphex_query", _small_graph(), query="auth", format="json")
+    reply = _call("apexgraph_query", _small_graph(), query="auth", format="json")
     payload = json.loads(reply["result"]["content"][0]["text"])
     assert "nodes" in payload and "stats" in payload
 
 
-# -- graphex_stats -----------------------------------------------------------
+# -- apexgraph_stats -----------------------------------------------------------
 
 
 def test_stats_reports_correct_counts() -> None:
-    reply = _call("graphex_stats", _small_graph())
+    reply = _call("apexgraph_stats", _small_graph())
     text = reply["result"]["content"][0]["text"]
     assert "nodes: 3" in text
     assert "edges: 2" in text
@@ -146,11 +146,11 @@ def test_stats_reports_correct_counts() -> None:
     assert "god nodes: 1" in text
 
 
-# -- graphex_explain ---------------------------------------------------------
+# -- apexgraph_explain ---------------------------------------------------------
 
 
 def test_explain_known_node() -> None:
-    reply = _call("graphex_explain", _small_graph(), node="login")
+    reply = _call("apexgraph_explain", _small_graph(), node="login")
     text = reply["result"]["content"][0]["text"]
     assert "login" in text
     # login has predecessor auth and successor db.
@@ -159,20 +159,20 @@ def test_explain_known_node() -> None:
 
 
 def test_explain_unknown_node_errors() -> None:
-    reply = _call("graphex_explain", _small_graph(), node="nope")
+    reply = _call("apexgraph_explain", _small_graph(), node="nope")
     assert reply["error"]["code"] == -32602
 
 
 def test_explain_missing_node_arg_errors() -> None:
-    reply = _call("graphex_explain", _small_graph())
+    reply = _call("apexgraph_explain", _small_graph())
     assert reply["error"]["code"] == -32602
 
 
-# -- graphex_path ------------------------------------------------------------
+# -- apexgraph_path ------------------------------------------------------------
 
 
 def test_path_finds_directed_path() -> None:
-    reply = _call("graphex_path", _small_graph(), source="auth", target="db")
+    reply = _call("apexgraph_path", _small_graph(), source="auth", target="db")
     text = reply["result"]["content"][0]["text"]
     assert "AuthService" in text
     assert "ConnectionPool" in text
@@ -180,13 +180,13 @@ def test_path_finds_directed_path() -> None:
 
 
 def test_path_undirected_fallback() -> None:
-    reply = _call("graphex_path", _small_graph(), source="db", target="auth")
+    reply = _call("apexgraph_path", _small_graph(), source="db", target="auth")
     text = reply["result"]["content"][0]["text"]
     assert "undirected" in text
 
 
 def test_path_unknown_node_errors() -> None:
-    reply = _call("graphex_path", _small_graph(), source="auth", target="ghost")
+    reply = _call("apexgraph_path", _small_graph(), source="auth", target="ghost")
     assert reply["error"]["code"] == -32602
 
 
@@ -199,7 +199,7 @@ def test_unknown_method_is_method_not_found() -> None:
 
 
 def test_unknown_tool_errors() -> None:
-    reply = _call("graphex_nope", _small_graph())
+    reply = _call("apexgraph_nope", _small_graph())
     assert reply["error"]["code"] == -32602
 
 
@@ -226,7 +226,7 @@ def test_serve_loads_graph_and_round_trips(tmp_path: Path) -> None:
         for r in (
             _req("initialize", 1),
             _req("tools/list", 2),
-            _req("tools/call", 3, name="graphex_stats", arguments={}),
+            _req("tools/call", 3, name="apexgraph_stats", arguments={}),
         )
     )
     out = io.StringIO()
@@ -234,7 +234,7 @@ def test_serve_loads_graph_and_round_trips(tmp_path: Path) -> None:
 
     replies = [json.loads(line) for line in out.getvalue().splitlines() if line.strip()]
     assert len(replies) == 3
-    assert replies[0]["result"]["serverInfo"]["name"] == "graphex"
+    assert replies[0]["result"]["serverInfo"]["name"] == "apexgraph"
     assert len(replies[1]["result"]["tools"]) == 4
     assert "nodes: 3" in replies[2]["result"]["content"][0]["text"]
 

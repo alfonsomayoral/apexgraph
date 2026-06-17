@@ -1,11 +1,11 @@
-"""Reproducible benchmark: Graphex (bm25 / local) vs slurp on recall@budget.
+"""Reproducible benchmark: Apexgraph (bm25 / local) vs slurp on recall@budget.
 
 For each labeled query (see ``bench/queries.json``) and each token budget, we run
 three retrievers over the same graph and measure how much of the human-labeled
 *relevant* set each one recovers within the budget:
 
-  - Graphex bm25  : in-process lexical retrieval (the tool's default backend).
-  - Graphex local : in-process bm25 + offline semantic embeddings (model2vec),
+  - Apexgraph bm25  : in-process lexical retrieval (the tool's default backend).
+  - Apexgraph local : in-process bm25 + offline semantic embeddings (model2vec),
                     fused by reciprocal rank fusion.
   - slurp         : the prior-art tool, run as an opaque black box from PyPI via
                     ``uvx --from slurp-graph slurp ...``. TF-IDF retrieval.
@@ -37,14 +37,14 @@ RESULTS_PATH = BENCH_DIR / "results.json"
 
 BUDGETS: tuple[int, ...] = (500, 1500, 4000)
 
-# Graphex is imported from the repo it lives in; make sure it's importable when
+# Apexgraph is imported from the repo it lives in; make sure it's importable when
 # the script is invoked as a file.
 sys.path.insert(0, str(REPO_ROOT))
 
-from graphex.budget import select_subgraph  # noqa: E402
-from graphex.cache import load_or_build  # noqa: E402
-from graphex.loader import load_graph  # noqa: E402
-from graphex.scorer import score_nodes  # noqa: E402
+from apexgraph.budget import select_subgraph  # noqa: E402
+from apexgraph.cache import load_or_build  # noqa: E402
+from apexgraph.loader import load_graph  # noqa: E402
+from apexgraph.scorer import score_nodes  # noqa: E402
 
 SLURP_TIMEOUT_S = 300  # first call installs slurp; generous to be safe.
 
@@ -55,10 +55,10 @@ def load_queries() -> list[dict]:
     return data["queries"]
 
 
-def graphex_select(
+def apexgraph_select(
     graph, cache, query: str, budget: int, backend: str
 ) -> tuple[set[str], int, int]:
-    """Run one Graphex backend for (query, budget). Returns (ids, n_selected, tokens)."""
+    """Run one Apexgraph backend for (query, budget). Returns (ids, n_selected, tokens)."""
     scores = score_nodes(graph, query, cache=cache, backend=backend)
     sub, stats = select_subgraph(graph, scores, budget, token_costs=cache.token_costs)
     return set(sub.node_ids), int(stats["nodes_selected"]), int(stats["tokens_used"])
@@ -132,18 +132,18 @@ def main() -> int:
         qtype = q["type"]
         relevant = set(q["relevant"])
         for budget in BUDGETS:
-            # Graphex bm25
-            gx_ids, gx_n, gx_tok = graphex_select(graph, cache, query, budget, "bm25")
+            # Apexgraph bm25
+            gx_ids, gx_n, gx_tok = apexgraph_select(graph, cache, query, budget, "bm25")
             r, p = metrics(gx_ids, relevant)
             rows.append(
-                _row("graphex-bm25", query, qtype, budget, gx_n, gx_tok, r, p, len(relevant))
+                _row("apexgraph-bm25", query, qtype, budget, gx_n, gx_tok, r, p, len(relevant))
             )
 
-            # Graphex local (semantic)
-            lx_ids, lx_n, lx_tok = graphex_select(graph, cache, query, budget, "local")
+            # Apexgraph local (semantic)
+            lx_ids, lx_n, lx_tok = apexgraph_select(graph, cache, query, budget, "local")
             r, p = metrics(lx_ids, relevant)
             rows.append(
-                _row("graphex-local", query, qtype, budget, lx_n, lx_tok, r, p, len(relevant))
+                _row("apexgraph-local", query, qtype, budget, lx_n, lx_tok, r, p, len(relevant))
             )
 
             # slurp (black box)

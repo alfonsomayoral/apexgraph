@@ -6,7 +6,7 @@ import json
 
 from click.testing import CliRunner
 
-from graphex.cli import cli
+from apexgraph.cli import cli
 
 _GRAPH = {
     "nodes": [
@@ -51,7 +51,7 @@ def _write_graph(runner_path: str = "graph.json") -> None:
 def test_version():
     res = CliRunner().invoke(cli, ["--version"])
     assert res.exit_code == 0
-    assert "graphex v" in res.output
+    assert "apexgraph v" in res.output
 
 
 def test_query_default_route_and_budget():
@@ -109,7 +109,7 @@ def test_missing_graph_is_actionable():
     with runner.isolated_filesystem():
         res = runner.invoke(cli, ["something"])
         assert res.exit_code != 0
-        assert "graphex index" in res.output
+        assert "apexgraph index" in res.output
 
 
 def test_index_then_query(tmp_path):
@@ -131,10 +131,10 @@ def test_index_then_query(tmp_path):
 def test_missing_backend_dep_is_clean_error(monkeypatch):
     # A semantic backend whose optional dependency isn't installed must produce a
     # clean, actionable message — not a raw traceback.
-    import graphex.scorer as scorer
+    import apexgraph.scorer as scorer
 
     def _boom(graph, query, backend):
-        raise ImportError("The local backend requires: pip install 'graphex[local]'")
+        raise ImportError("The local backend requires: pip install 'apexgraph[local]'")
 
     monkeypatch.setattr(scorer, "_semantic_scores", _boom)
     runner = CliRunner()
@@ -143,7 +143,7 @@ def test_missing_backend_dep_is_clean_error(monkeypatch):
         res = runner.invoke(cli, ["login", "--backend", "local", "--no-cache", "--no-audit"])
         assert res.exit_code != 0
         assert "Traceback" not in res.output
-        assert "graphex[local]" in res.output
+        assert "apexgraph[local]" in res.output
 
 
 def test_init_scaffolds_ignore():
@@ -151,5 +151,5 @@ def test_init_scaffolds_ignore():
     with runner.isolated_filesystem():
         res = runner.invoke(cli, ["init"])
         assert res.exit_code == 0
-        with open(".graphexignore", encoding="utf-8") as f:
-            assert "graphex ignore" in f.read()
+        with open(".apexgraphignore", encoding="utf-8") as f:
+            assert "apexgraph ignore" in f.read()
