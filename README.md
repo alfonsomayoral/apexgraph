@@ -27,7 +27,7 @@ apexgraph "how does auth work" -b 4000  # retrieve the apex subgraph
 ## 🎯 The problem
 
 <p align="center">
-  <img src="assets/knowledge-graph.png" alt="A dense knowledge graph of thousands of connected nodes" width="440">
+  <img src="assets/knowledge-graph.png" alt="A dense knowledge graph of thousands of connected nodes" width="620">
   <br>
   <sub><em>A knowledge graph grows into thousands of densely-connected nodes — your LLM needs only the handful that answer the query.</em></sub>
 </p>
