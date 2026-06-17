@@ -26,6 +26,12 @@ apexgraph "how does auth work" -b 4000  # retrieve the apex subgraph
 
 ## 🎯 The problem
 
+<p align="center">
+  <img src="assets/knowledge-graph.png" alt="A dense knowledge graph of thousands of connected nodes" width="440">
+  <br>
+  <sub><em>A knowledge graph grows into thousands of densely-connected nodes — your LLM needs only the handful that answer the query.</em></sub>
+</p>
+
 Knowledge graphs — the kind [`graphify`](https://github.com/) builds from a
 codebase — get **big**. A real app can index to thousands of nodes. When an
 agent needs context about *one* corner of it, the usual options are both bad:
